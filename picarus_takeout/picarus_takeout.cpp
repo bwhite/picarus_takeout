@@ -2,6 +2,10 @@
 #include <string>
 #include "picarus_takeout.hpp"
 
+void picarus_delete_array(void *array) {
+    delete [] array;
+}
+
 
 ImagePreprocessor* picarus_image_preprocessor_factory(cJSON *cjs) {
     cJSON *kw = cJSON_GetObjectItem(cjs, "kw");

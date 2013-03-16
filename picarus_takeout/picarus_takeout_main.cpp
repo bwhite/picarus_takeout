@@ -42,7 +42,7 @@ int main(int argc, char **argv) {
         int width, height, channels;
         unsigned char *image = ip->asarray((unsigned char *)&input_data[0], input_data.size(), &height, &width, &channels);
         std::cout << "Height: " << height << " Width: " << width << " Channels: " << channels << std::endl;
-        delete [] image;
+        free(image);
         delete ip;
     } else if (name && strcmp("picarus.HistogramImageFeature", name->valuestring) == 0) {
         HistogramImageFeature* hif = picarus_histogram_image_feature_factory(cjs);

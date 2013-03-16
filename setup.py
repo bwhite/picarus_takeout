@@ -36,7 +36,7 @@ except ImportError:
 #  '-ftree-vectorizer-verbose=2'
 #, '-lblas' '-lopencv_highgui', '-lopencv_core','-lopencv_imgproc'
 ext_modules = [Extension("_picarus_takeout",
-                         ["picarus_takeout/picarus_takeout_wrap.pyx",
+                         ["picarus_takeout/wrap.pyx",
                           "picarus_takeout/picarus_takeout.cpp",
                           "picarus_takeout/cJSON.c",
                           "picarus_takeout/ImagePreprocessor.cpp",
@@ -47,7 +47,7 @@ ext_modules = [Extension("_picarus_takeout",
                           "picarus_takeout/pyramid_histogram_aux.c",
                           "picarus_takeout/bovw_aux.c"],
                          language="c++",
-                         extra_compile_args=['-O3', '-Wall', '-mmmx', '-msse', '-msse2', '-DUSE_BLAS'],
+                         extra_compile_args=['-I', np.get_include(), '-O3', '-Wall', '-mmmx', '-msse', '-msse2', '-DUSE_BLAS'],
                          libraries=['opencv_highgui', 'opencv_core', 'opencv_imgproc', 'blas'])]
 
 setup(name='picarus_takeout',

@@ -1,6 +1,6 @@
 #include "ImagePreprocessor.hpp"
 #include <opencv2/opencv.hpp>
-#include <iostream>
+#include <cstring>
 
 ImagePreprocessor::ImagePreprocessor(std::string method, int size, std::string compression) : method(method), size(size), compression(compression) {
     if (!method.compare("max_side")) {
@@ -26,8 +26,6 @@ std::vector<char> ImagePreprocessor::asbinary(std::vector<char> binary_image) {
     // TODO: Convert
 }
 
-
-
 unsigned char *ImagePreprocessor::asarray(unsigned char *binary_image, int size, int *height_out, int *width_out, int *channels_out) {
     cv::Mat binary_image_mat(1, size, CV_8UC1, binary_image);
     cv::Mat image = cv::imdecode(binary_image_mat, CV_LOAD_IMAGE_COLOR);
@@ -47,22 +45,25 @@ unsigned char *ImagePreprocessor::asarray(unsigned char *binary_image, int size,
         }
         break;
     case 2: // force_square
+        // TODO: Need to crop as the aspect ratio will be changed!
         new_height = new_width = this->size;
         break;
     default:
         break;
     }
+    unsigned char *p = new unsigned char[image.rows * image.cols * image.channels()];
     if (orig_width != new_width || orig_height != new_height) {
+        // NOTE: This assumed we are only using BGR output, may change in the future
+        cv::Mat image_resized(new_height, new_width, CV_8UC3, p);
         int interpolation = CV_INTER_LINEAR;
         if ((double)new_width / orig_width < .5 || (double)new_height / orig_height < .5)
             interpolation = CV_INTER_AREA;
-        std::cout << "NewHeight " << new_height << " NewWidth " << new_width << std::endl;
-        cv::resize(image, image, cv::Size(new_width, new_height), interpolation);
+        cv::resize(image, image_resized, cv::Size(new_width, new_height), interpolation);
+    } else {
+        memcpy(p, image.ptr<unsigned char>(0), image.rows * image.cols * image.channels());
     }
-    unsigned char *p = new unsigned char[image.rows * image.cols * image.channels()];
-    memcpy(p, image.ptr<unsigned char>(0), image.rows * image.cols * image.channels());
-    *height_out = image.rows;
-    *width_out = image.cols;
+    *height_out = new_height;
+    *width_out = new_width;
     *channels_out = image.channels();
     return p;
 }
