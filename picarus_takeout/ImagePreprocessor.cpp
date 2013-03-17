@@ -1,6 +1,7 @@
 #include "ImagePreprocessor.hpp"
 #include <opencv2/opencv.hpp>
 #include <cstring>
+#include <cstdio>
 
 ImagePreprocessor::ImagePreprocessor(std::string method, int size, std::string compression) : method(method), size(size), compression(compression) {
     if (!method.compare("max_side")) {
@@ -29,13 +30,17 @@ std::vector<char> ImagePreprocessor::asbinary(std::vector<char> binary_image) {
 unsigned char *ImagePreprocessor::asarray(unsigned char *binary_image, int size, int *height_out, int *width_out, int *channels_out) {
     cv::Mat binary_image_mat(1, size, CV_8UC1, binary_image);
     cv::Mat image = cv::imdecode(binary_image_mat, CV_LOAD_IMAGE_COLOR);
-    const int orig_height = image.rows, orig_width = image.cols;
+    unsigned char *image_cropped_data = NULL;
+    int orig_height = image.rows, orig_width = image.cols;
     int new_height = orig_height, new_width = orig_width;
     switch (this->method_code) {
     case 0: // max_side
+    {
         if (orig_height <= this->size && orig_width <= this->size)
             break;
+    }
     case 1: // force_max_side
+    {
         if (orig_height >= orig_width) {
             new_height = this->size;
             new_width = this->size * (double)orig_width / orig_height + .5;
@@ -44,14 +49,25 @@ unsigned char *ImagePreprocessor::asarray(unsigned char *binary_image, int size,
             new_height = this->size * (double)orig_height / orig_width + .5;
         }
         break;
+    }
     case 2: // force_square
-        // TODO: Need to crop as the aspect ratio will be changed!
+    {
+        if (orig_width != orig_height) {
+            int new_size = orig_width > orig_height ? orig_height : orig_width;
+            image_cropped_data = new unsigned char[new_size * new_size * 3];
+            cv::Mat image_cropped(new_size, new_size, CV_8UC3, image_cropped_data);
+            cv::getRectSubPix(image, cv::Size2f(new_size, new_size),  cv::Point2f(orig_width / 2., orig_width / 2.), image_cropped);
+            image = image_cropped;
+            orig_width = orig_height = new_size;
+        }
         new_height = new_width = this->size;
         break;
+    }
     default:
         break;
     }
-    unsigned char *p = new unsigned char[image.rows * image.cols * image.channels()];
+
+    unsigned char *p = new unsigned char[new_height * new_width * 3];
     if (orig_width != new_width || orig_height != new_height) {
         // NOTE: This assumed we are only using BGR output, may change in the future
         cv::Mat image_resized(new_height, new_width, CV_8UC3, p);
@@ -65,5 +81,7 @@ unsigned char *ImagePreprocessor::asarray(unsigned char *binary_image, int size,
     *height_out = new_height;
     *width_out = new_width;
     *channels_out = image.channels();
+    if (image_cropped_data != NULL)
+        delete [] image_cropped_data;
     return p;
 }

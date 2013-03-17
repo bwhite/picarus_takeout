@@ -44,14 +44,21 @@ HistogramImageFeature* picarus_histogram_image_feature_factory(cJSON *cjs) {
     int levels = val->valueint;
 
     val = cJSON_GetObjectItem(kw, "num_bins"); // 3 ints
-    if (!val || val->type != cJSON_Array || cJSON_GetArraySize(val) != 3)
-        return NULL;
     std::vector<int> num_bins(3);
-    for (int i = 0; i < 3; ++i) {
-        cJSON *array_val = cJSON_GetArrayItem(val, i);
-        if (!array_val || array_val->type != cJSON_Number)
+    if (!val)
+        return NULL;
+    if (val->type == cJSON_Number) {
+        for (int i = 0; i < 3; ++i)
+            num_bins[i] = val->valueint;
+    } else {   
+        if (val->type != cJSON_Array || cJSON_GetArraySize(val) != 3)
             return NULL;
-        num_bins[i] = array_val->valueint;
+        for (int i = 0; i < 3; ++i) {
+            cJSON *array_val = cJSON_GetArrayItem(val, i);
+            if (!array_val || array_val->type != cJSON_Number)
+                return NULL;
+            num_bins[i] = array_val->valueint;
+        }
     }
     return new HistogramImageFeature(mode, num_bins, levels);
 }
