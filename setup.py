@@ -47,6 +47,7 @@ ext_modules = [Extension("_picarus_takeout",
                           "picarus_takeout/pyramid_histogram_aux.c",
                           "picarus_takeout/bovw_aux.c"],
                          language="c++",
+                         include_dirs=['picarus_takeout'],
                          extra_compile_args=['-I', np.get_include(), '-O3', '-Wall', '-mmmx', '-msse', '-msse2', '-DUSE_BLAS'],
                          libraries=['opencv_highgui', 'opencv_core', 'opencv_imgproc', 'blas'])]
 
