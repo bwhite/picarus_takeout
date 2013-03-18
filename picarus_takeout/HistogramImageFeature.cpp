@@ -82,5 +82,7 @@ unsigned int *HistogramImageFeature::histogram_label_image(unsigned char *image,
 double* HistogramImageFeature::compute_feature(unsigned char *image, int height, int width, int *out_size) {
     int max_val;
     unsigned int *label_image = histogram_label_image(image, height, width, &max_val);
-    return pyramid_histogram(label_image, height, width, max_val, levels, out_size);
+    double *out = pyramid_histogram(label_image, height, width, max_val, levels, out_size);
+    delete [] label_image;
+    return out;
 }
