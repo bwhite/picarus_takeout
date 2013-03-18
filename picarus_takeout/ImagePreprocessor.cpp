@@ -31,6 +31,11 @@ unsigned char *ImagePreprocessor::asbinary(unsigned char *binary_image, int size
     {
         int height, width, channels;
         unsigned char *image_data = asarray(binary_image, size, &height, &width, &channels);
+        if (!height || !width) {
+            *size_out = 0;
+            return NULL;
+            free(image_data);
+        }
         printf("height[%d] width[%d] channels[%d] ptr[%p]\n", height, width, channels, image_data);
         cv::Mat image(height, width, CV_8UC3, image_data);
         cv::imencode(compression_extension, image, buf, compression_params);
@@ -48,6 +53,7 @@ unsigned char *ImagePreprocessor::asarray(unsigned char *binary_image, int size,
     unsigned char *image_cropped_data = NULL;
     int orig_height = image.rows, orig_width = image.cols;
     int new_height = orig_height, new_width = orig_width;
+    printf("orig_height[%d] orig_width[%d] ptr[%p]\n", orig_height, orig_width, image.data);
     switch (this->method_code) {
     case 0: // max_side
     {
