@@ -1,5 +1,6 @@
 #include "ImageFeature.hpp"
 #include "bovw_aux.h"
+#include <cstring>
 
 ImageFeature::ImageFeature() {
 }
@@ -28,6 +29,7 @@ double *ImageFeature::pyramid_histogram(unsigned int *label_image, int height, i
     for (int i = 0; i < levels; ++i)
         num_bins += bins_per_level(i, max_val);
     unsigned int *out = new unsigned int[num_bins];
+    memset(out, 0, sizeof(unsigned int) * num_bins);
     double *out_norm = new double[num_bins];
     *out_size = num_bins;
     bovw_fast_hist(label_image, &out[0], height, width, max_val, levels - 1);
