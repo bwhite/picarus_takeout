@@ -60,6 +60,15 @@ cdef class ImagePreprocessor(object):
         self.ip = classes.picarus_image_preprocessor_factory(config)
         if self.ip is NULL:
             raise ValueError
+
+    def asbinary(self, binary_image):
+        cdef unsigned char *binary_image_ptr = binary_image
+        cdef int size_out
+        cdef bytes py_string
+        cdef unsigned char *image_data = self.ip.asbinary(binary_image_ptr, len(binary_image), &size_out)
+        py_string = image_data[:size_out]  # NOTE: Copies the data
+        classes.picarus_delete_array(image_data)
+        return py_string
     
     def asarray(self, binary_image):
         cdef unsigned char *binary_image_ptr = binary_image

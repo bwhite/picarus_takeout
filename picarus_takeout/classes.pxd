@@ -6,6 +6,7 @@ cdef extern from "cJSON.h":
 
 cdef extern from "picarus_takeout.hpp":
     cdef cppclass ImagePreprocessor:
+        unsigned char *asbinary(unsigned char *binary_image, int size, int *size_out)
         unsigned char *asarray(unsigned char *binary_image, int size, int *height_out, int *width_out, int *channels_out)
 
     cdef cppclass HistogramImageFeature:

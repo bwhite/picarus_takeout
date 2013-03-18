@@ -60,7 +60,7 @@ class Test(unittest.TestCase):
             feature.compute_feature(image)
 
     def _run_test(self, method):
-        compression = 'jpg'
+        compression = '.jpg'
         sizes = [1, 2, 3, 5, 50, 64, 100, 101, 150, 250, 500]
         for x in glob.glob('test_images/*'):
             if x.endswith('.gif'):  # Not supported
@@ -75,13 +75,17 @@ class Test(unittest.TestCase):
                 #    image_imfeat = ip_imfeat.asarray(data_binary)
                 #    np.testing.assert_equal(image, image_imfeat)
                 # Idempotence
-                #image_binary = ip.asbinary(open(x).read())
+                image_binary = ip.asbinary(open(x).read())
+                image2 = ip.asarray(image_binary)
                 #image_binary2 = ip.asbinary(image_binary)
                 #self.assertEquals(image_binary, image_binary2)
-                self.assertEquals(image.ndim, 3)
-                print((size, image.shape))
+                #self.assertEquals(image.ndim, 3)
+                print np.median(np.abs((image - image2).ravel()))
+                #, 5)self.assertLess(
                 yield image, size
+                yield image2, size
                 self._feature_tests(image)
+                
 
     def test_max_size(self):
         for image, size in self._run_test('max_side'):

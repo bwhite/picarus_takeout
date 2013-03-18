@@ -3,7 +3,7 @@
 #include <cstring>
 #include <cstdio>
 
-ImagePreprocessor::ImagePreprocessor(std::string method, int size, std::string compression) : method(method), size(size), compression(compression) {
+ImagePreprocessor::ImagePreprocessor(std::string method, int size, std::string compression) : method(method), size(size) {
     if (!method.compare("max_side")) {
         this->method_code = 0;
     } else if (!method.compare("force_max_side")) {
@@ -13,18 +13,29 @@ ImagePreprocessor::ImagePreprocessor(std::string method, int size, std::string c
     } else {
         this->method_code = 255; // "original"  Don't change the size
     }
+
+    // Only JPG is supported at this point and it is the default (use "jpg" for forward compatibility)
+    this->compression_extension = std::string(".jpg");
+    std::vector<int> params(2);
+    params[0] = CV_IMWRITE_JPEG_QUALITY;
+    params[1] = 100;
+    this->compression_params = params;
 }
 
 
 ImagePreprocessor::~ImagePreprocessor() {
 }
 
-std::vector<char> ImagePreprocessor::asbinary(std::vector<char> binary_image) {
+unsigned char *ImagePreprocessor::asbinary(unsigned char *binary_image, int size, int *size_out) {
     int height, width, channels;
-    //std::vector<unsigned char> asarray(binary_image, &height, &width, &channels);
-    //cv::imencode();
-    //bool imencode(const string& ext, InputArray img, vector<uchar>& buf, const vector<int>& params=vector<int>())
-    // TODO: Convert
+    unsigned char *image_data = asarray(binary_image, size, &height, &width, &channels);
+    cv::Mat image(height, width, CV_8UC3, image_data);
+    std::vector<unsigned char> buf;
+    cv::imencode(compression_extension, image, buf, compression_params);
+    unsigned char *out_data = new unsigned char[buf.size()];
+    memcpy(out_data, &buf[0], buf.size());
+    *size_out = buf.size();
+    return out_data;
 }
 
 unsigned char *ImagePreprocessor::asarray(unsigned char *binary_image, int size, int *height_out, int *width_out, int *channels_out) {
