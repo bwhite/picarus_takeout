@@ -66,6 +66,8 @@ cdef class ImagePreprocessor(object):
         cdef int size_out
         cdef bytes py_string
         cdef unsigned char *image_data = self.ip.asbinary(binary_image_ptr, len(binary_image), &size_out)
+        if image_data == NULL:
+            raise RuntimeError
         py_string = image_data[:size_out]  # NOTE: Copies the data
         classes.picarus_delete_array(image_data)
         return py_string
@@ -74,6 +76,8 @@ cdef class ImagePreprocessor(object):
         cdef unsigned char *binary_image_ptr = binary_image
         cdef int height, width, channels
         cdef unsigned char *image_data = self.ip.asarray(binary_image_ptr, len(binary_image), &height, &width, &channels)
+        if image_data == NULL:
+            raise RuntimeError
         return wrap_array([height, width, channels], image_data, np.NPY_UINT8)
 
 cdef class HistogramImageFeature(object):
