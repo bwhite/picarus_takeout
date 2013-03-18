@@ -75,7 +75,8 @@ class Test(unittest.TestCase):
                 #    image_imfeat = ip_imfeat.asarray(data_binary)
                 #    np.testing.assert_equal(image, image_imfeat)
                 # Idempotence
-                image_binary = ip.asbinary(open(x).read())
+                for _ in range(1000):
+                    image_binary = ip.asbinary(open(x).read())
                 image2 = ip.asarray(image_binary)
                 #image_binary2 = ip.asbinary(image_binary)
                 #self.assertEquals(image_binary, image_binary2)

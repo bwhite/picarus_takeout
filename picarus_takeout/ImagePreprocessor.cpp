@@ -31,6 +31,7 @@ unsigned char *ImagePreprocessor::asbinary(unsigned char *binary_image, int size
     {
         int height, width, channels;
         unsigned char *image_data = asarray(binary_image, size, &height, &width, &channels);
+        printf("height[%d] width[%d] channels[%d] ptr[%p]\n", height, width, channels, image_data);
         cv::Mat image(height, width, CV_8UC3, image_data);
         cv::imencode(compression_extension, image, buf, compression_params);
         free(image_data);
