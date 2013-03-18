@@ -1,7 +1,6 @@
 #include "ImagePreprocessor.hpp"
 #include <opencv2/opencv.hpp>
 #include <cstring>
-#include <cstdio>
 
 ImagePreprocessor::ImagePreprocessor(std::string method, int size, std::string compression) : method(method), size(size) {
     if (!method.compare("max_side")) {
@@ -36,7 +35,6 @@ unsigned char *ImagePreprocessor::asbinary(unsigned char *binary_image, int size
             return NULL;
             free(image_data);
         }
-        printf("height[%d] width[%d] channels[%d] ptr[%p]\n", height, width, channels, image_data);
         cv::Mat image(height, width, CV_8UC3, image_data);
         cv::imencode(compression_extension, image, buf, compression_params);
         free(image_data);
@@ -53,7 +51,10 @@ unsigned char *ImagePreprocessor::asarray(unsigned char *binary_image, int size,
     unsigned char *image_cropped_data = NULL;
     int orig_height = image.rows, orig_width = image.cols;
     int new_height = orig_height, new_width = orig_width;
-    printf("orig_height[%d] orig_width[%d] ptr[%p]\n", orig_height, orig_width, image.data);
+    if (!orig_height || !orig_width) {
+        *height_out = *width_out = *channels_out = 0;
+        return NULL;
+    }
     switch (this->method_code) {
     case 0: // max_side
     {
