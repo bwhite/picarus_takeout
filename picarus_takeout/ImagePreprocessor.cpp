@@ -46,6 +46,7 @@ unsigned char *ImagePreprocessor::asbinary(unsigned char *binary_image, int size
 }
 
 unsigned char *ImagePreprocessor::asarray(unsigned char *binary_image, int size, int *height_out, int *width_out, int *channels_out) {
+    // TODO: Wrap this and call it separately
     cv::Mat binary_image_mat(1, size, CV_8UC1, binary_image);
     cv::Mat image = cv::imdecode(binary_image_mat, CV_LOAD_IMAGE_COLOR);
     unsigned char *image_cropped_data = NULL;

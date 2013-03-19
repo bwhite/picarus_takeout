@@ -2,9 +2,6 @@
 #include <cmath>
 #include "picarus_math.h"
 
-/*extern "C" {
-    double dot_product(double *v0, double *v1, int size);
-    }*/
 
 LinearClassifier::LinearClassifier(std::vector<double> coefficients, double intercept) :  coefficients(coefficients), intercept(intercept) {
 }

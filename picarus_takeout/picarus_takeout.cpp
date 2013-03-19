@@ -70,7 +70,7 @@ LinearClassifier* picarus_linear_classifier_factory(cJSON *cjs) {
     val = cJSON_GetObjectItem(kw, "intercept");
     if (!val || val->type != cJSON_Number)
         return NULL;
-    int intercept = val->valuedouble;
+    double intercept = val->valuedouble;
 
     val = cJSON_GetObjectItem(kw, "coefficients");
     if (!val || val->type != cJSON_Array)
