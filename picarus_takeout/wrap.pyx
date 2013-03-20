@@ -38,7 +38,7 @@ cdef class PicarusArrayWrap:
                                             self.typenum, self.data_ptr)
 
     def __dealloc__(self):
-        classes.picarus_delete_array(self.data_ptr)
+        classes.delete_array(self.data_ptr)
 
 
 cdef object wrap_array(object dims, void *array, int typenum):
@@ -57,7 +57,7 @@ cdef class ImagePreprocessor(object):
         json_config = json.dumps({'name': 'picarus.ImagePreprocessor', 'kw': kw})
         cdef char *json_config_charp = json_config
         cdef classes.cJSON *config = classes.cJSON_Parse(json_config_charp)
-        self.ip = classes.picarus_image_preprocessor_factory(config)
+        self.ip = classes.image_preprocessor_factory(config)
         if self.ip is NULL:
             raise ValueError
 
@@ -69,16 +69,8 @@ cdef class ImagePreprocessor(object):
         if image_data == NULL:
             raise RuntimeError
         py_string = image_data[:size_out]  # NOTE: Copies the data
-        classes.picarus_delete_array(image_data)
+        classes.delete_array(image_data)
         return py_string
-    
-    def asarray(self, binary_image):
-        cdef unsigned char *binary_image_ptr = binary_image
-        cdef int height, width, channels
-        cdef unsigned char *image_data = self.ip.asarray(binary_image_ptr, len(binary_image), &height, &width, &channels)
-        if image_data == NULL:
-            raise RuntimeError
-        return wrap_array([height, width, channels], image_data, np.NPY_UINT8)
 
 cdef class HistogramImageFeature(object):
     cdef classes.HistogramImageFeature *hif
@@ -87,7 +79,7 @@ cdef class HistogramImageFeature(object):
         json_config = json.dumps({'name': 'picarus.HistogramImageFeature', 'kw': kw})
         cdef char *json_config_charp = json_config
         cdef classes.cJSON *config = classes.cJSON_Parse(json_config_charp)
-        self.hif = classes.picarus_histogram_image_feature_factory(config)
+        self.hif = classes.histogram_image_feature_factory(config)
         if self.hif is NULL:
             raise ValueError
 
@@ -105,7 +97,7 @@ cdef class LinearClassifier(object):
         json_config = json.dumps({'name': 'picarus.LinearClassifier', 'kw': kw})
         cdef char *json_config_charp = json_config
         cdef classes.cJSON *config = classes.cJSON_Parse(json_config_charp)
-        self.lc = classes.picarus_linear_classifier_factory(config)
+        self.lc = classes.linear_classifier_factory(config)
         if self.lc is NULL:
             raise ValueError
 
