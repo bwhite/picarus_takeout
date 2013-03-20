@@ -61,6 +61,9 @@ cdef class ImagePreprocessor(object):
         if self.ip is NULL:
             raise ValueError
 
+    def __dealloc__(self):
+        del self.ip
+
     def asbinary(self, binary_image):
         cdef unsigned char *binary_image_ptr = binary_image
         cdef int size_out
@@ -83,6 +86,9 @@ cdef class HistogramImageFeature(object):
         if self.hif is NULL:
             raise ValueError
 
+    def __dealloc__(self):
+        del self.hif
+
     def compute_feature(self, np.ndarray image):
         if image.ndim != 3 or image.shape[2] != 3:
             raise ValueError('Expecting BGR image')
@@ -101,7 +107,43 @@ cdef class LinearClassifier(object):
         if self.lc is NULL:
             raise ValueError
 
+    def __dealloc__(self):
+        del self.lc
+
     def decision_function(self, np.ndarray feature):
         if feature.ndim != 1 or feature.dtype != np.float64:
             raise ValueError('Feature must be a vector of doubles')
         return self.lc.decision_function(<double *>feature.data, feature.size)
+
+cdef class ModelChain(object):
+    cdef classes.ModelChain *mc
+    cdef classes.Model *model
+
+    def __init__(self, json_config):
+        cdef char *json_config_charp = json_config
+        self.mc = new classes.ModelChain(json_config_charp)
+        if self.mc is NULL:
+            raise ValueError
+        self.model = <classes.Model *>self.mc
+
+    def __dealloc__(self):
+        del self.mc
+
+    def process_binary(self, data):
+        cdef char *data_charp = data
+        cdef int size_out
+        cdef bytes py_string
+        cdef int size = len(data)
+        cdef unsigned char *output = self.model.process_binary(<unsigned char *>data_charp, size, &size_out)
+        if output == NULL:
+            raise RuntimeError
+        py_string = output[:size_out]  # NOTE: Copies the data
+        classes.delete_array(output)
+        return py_string
+
+def double_fromstring(data):
+    cdef char *data_charp = data
+    cdef int size = len(data)
+    cdef double val
+    classes.double_fromstring(<unsigned char *>data_charp, size, &val)
+    return val

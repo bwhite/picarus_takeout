@@ -19,8 +19,13 @@ cdef extern from "picarus_takeout.hpp" namespace "Picarus":
     HistogramImageFeature* histogram_image_feature_factory(cJSON *cjs)
     LinearClassifier* linear_classifier_factory(cJSON *cjs)
 
+cdef extern from "Model.hpp" namespace "Picarus":
+    void double_fromstring(unsigned char *input, int size, double *val)
+    cdef cppclass Model:
+        unsigned char *process_binary(unsigned char *input, int size, int *size_out)
+
+
 cdef extern from "ModelChain.hpp" namespace "Picarus":
     cdef cppclass ModelChain:
         ModelChain(char *)
-        void process_binary(unsigned char *input, int size, void (*collector)(const unsigned char *, int, void *), void *collector_state);
-        double decision_function(double *feature, int size)
+        unsigned char *process_binary(unsigned char *input, int size, int *size_out)

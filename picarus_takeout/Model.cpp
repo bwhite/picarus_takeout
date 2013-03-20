@@ -20,6 +20,7 @@ unsigned char *Model::process_binary(const unsigned char *input, int size, int *
     return output.data;
 }
 
+
 void ndarray_tostring(const std::vector<double> &vec, const std::vector<int> &shape, void (*collector)(const unsigned char *, int, void *), void *collector_state) {
     msgpack::type::tuple<std::vector<double>, std::vector<int> > tuple(vec, shape);
     msgpack::sbuffer sbuf;

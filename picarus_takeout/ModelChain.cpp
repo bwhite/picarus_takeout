@@ -28,6 +28,7 @@ ModelChain::ModelChain(const char *json_config) {
     cJSON_Delete(cjs);
 }
 
+
 ModelChain::~ModelChain() {
     for (int i = 0; i < models.size(); ++i) {
         delete models[i];

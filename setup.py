@@ -43,13 +43,15 @@ ext_modules = [Extension("_picarus_takeout",
                           "picarus_takeout/HistogramImageFeature.cpp",
                           "picarus_takeout/ImageFeature.cpp",
                           "picarus_takeout/picarus_math.c",
+                          "picarus_takeout/Model.cpp",
+                          "picarus_takeout/ModelChain.cpp",
                           "picarus_takeout/LinearClassifier.cpp",
                           "picarus_takeout/pyramid_histogram_aux.c",
                           "picarus_takeout/bovw_aux.c"],
                          language="c++",
                          include_dirs=['picarus_takeout'],
                          extra_compile_args=['-I', np.get_include(), '-O3', '-Wall', '-mmmx', '-msse', '-msse2', '-DUSE_BLAS'],
-                         libraries=['opencv_highgui', 'opencv_core', 'opencv_imgproc', 'blas'])]
+                         libraries=['opencv_highgui', 'opencv_core', 'opencv_imgproc', 'blas', 'msgpack'])]
 
 setup(name='picarus_takeout',
       cmdclass=cmdclass,
