@@ -1,6 +1,7 @@
 #include "ImagePreprocessor.hpp"
 #include <opencv2/opencv.hpp>
 #include <cstring>
+namespace Picarus {
 
 ImagePreprocessor::ImagePreprocessor(std::string method, int size, std::string compression) : method(method), size(size) {
     if (!method.compare("max_side")) {
@@ -25,11 +26,11 @@ ImagePreprocessor::ImagePreprocessor(std::string method, int size, std::string c
 ImagePreprocessor::~ImagePreprocessor() {
 }
 
-unsigned char *ImagePreprocessor::asbinary(unsigned char *binary_image, int size, int *size_out) {
+unsigned char *ImagePreprocessor::asbinary(const unsigned char *binary_image, int size, int *size_out) {
     std::vector<unsigned char> buf;
     {
-        int height, width, channels;
-        unsigned char *image_data = asarray(binary_image, size, &height, &width, &channels);
+        int height, width;
+        unsigned char *image_data = asarray(binary_image, size, &height, &width);
         if (!height || !width) {
             *size_out = 0;
             return NULL;
@@ -37,7 +38,7 @@ unsigned char *ImagePreprocessor::asbinary(unsigned char *binary_image, int size
         }
         cv::Mat image(height, width, CV_8UC3, image_data);
         cv::imencode(compression_extension, image, buf, compression_params);
-        free(image_data);
+        delete [] image_data;
     }
     unsigned char *out_data = new unsigned char[buf.size()];
     memcpy(out_data, &buf[0], buf.size());
@@ -45,15 +46,15 @@ unsigned char *ImagePreprocessor::asbinary(unsigned char *binary_image, int size
     return out_data;
 }
 
-unsigned char *ImagePreprocessor::asarray(unsigned char *binary_image, int size, int *height_out, int *width_out, int *channels_out) {
-    // TODO: Wrap this and call it separately
-    cv::Mat binary_image_mat(1, size, CV_8UC1, binary_image);
-    cv::Mat image = cv::imdecode(binary_image_mat, CV_LOAD_IMAGE_COLOR);
+unsigned char *ImagePreprocessor::asarray(const unsigned char *binary_image, int size, int *height_out, int *width_out) {
+    cv::Mat binary_image_mat(1, size, CV_8UC1, (unsigned char *)binary_image);
     unsigned char *image_cropped_data = NULL;
-    int orig_height = image.rows, orig_width = image.cols;
+    int orig_height, orig_width;
+    unsigned char *image_data = image_bgr_fromstring(binary_image, size, &orig_height, &orig_width);
+    cv::Mat image(orig_height, orig_width, CV_8UC3, image_data);
     int new_height = orig_height, new_width = orig_width;
     if (!orig_height || !orig_width) {
-        *height_out = *width_out = *channels_out = 0;
+        *height_out = *width_out =  0;
         return NULL;
     }
     switch (this->method_code) {
@@ -103,8 +104,16 @@ unsigned char *ImagePreprocessor::asarray(unsigned char *binary_image, int size,
     }
     *height_out = new_height;
     *width_out = new_width;
-    *channels_out = image.channels();
+    delete [] image_data;
     if (image_cropped_data != NULL)
         delete [] image_cropped_data;
     return p;
 }
+
+void ImagePreprocessor::process_binary(const unsigned char *input, int size, void (*collector)(const unsigned char *, int, void *), void *collector_state) {
+    int size_out;
+    unsigned char *output = asbinary(input, size, &size_out);
+    collector(output, size_out, collector_state);
+    delete [] output;
+}
+} // namespace Picarus

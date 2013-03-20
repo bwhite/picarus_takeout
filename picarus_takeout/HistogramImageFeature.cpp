@@ -2,6 +2,8 @@
 #include "HistogramImageFeature.hpp"
 #include "pyramid_histogram_aux.h"
 
+namespace Picarus {
+
 HistogramImageFeature::HistogramImageFeature(std::string mode, std::vector<int> num_bins, int levels) : mode(mode), num_bins(num_bins), levels(levels) {
     color_mode_to_code();
 }
@@ -86,3 +88,4 @@ double *HistogramImageFeature::compute_feature(unsigned char *image, int height,
     delete [] label_image;
     return out;
 }
+} // namespace Picarus

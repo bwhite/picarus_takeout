@@ -4,7 +4,7 @@
 #include <vector>
 #include "ImageFeature.hpp"
 
-
+namespace Picarus {
 class HistogramImageFeature: public ImageFeature {
 private:
     std::string mode;
@@ -22,6 +22,6 @@ protected:
     void color_mode_to_code();
     float *convert_color(unsigned char *image, int height, int width);
     unsigned int *histogram_label_image(unsigned char *image, int height, int width, int *out_max_val);
-    
 };
+} // namespace Picarus
 #endif

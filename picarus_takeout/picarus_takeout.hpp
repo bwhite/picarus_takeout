@@ -4,10 +4,12 @@
 #include "ImagePreprocessor.hpp"
 #include "HistogramImageFeature.hpp"
 #include "LinearClassifier.hpp"
-
-ImagePreprocessor* picarus_image_preprocessor_factory(cJSON *cjs);
-HistogramImageFeature* picarus_histogram_image_feature_factory(cJSON *cjs);
-LinearClassifier* picarus_linear_classifier_factory(cJSON *cjs);
-void picarus_delete_array(void *array);
+namespace Picarus {
+ImagePreprocessor* image_preprocessor_factory(cJSON *cjs);
+HistogramImageFeature* histogram_image_feature_factory(cJSON *cjs);
+LinearClassifier* linear_classifier_factory(cJSON *cjs);
+void model_chain_factory(cJSON *cjs, unsigned char *input, int size);
+void delete_array(void *array);
+} // namespace Picarus
 
 #endif
