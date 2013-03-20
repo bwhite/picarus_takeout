@@ -39,11 +39,15 @@ int main(int argc, char **argv) {
     read_file(argv[2], &input_data);
 
     Picarus::ModelChain mc(json_config.c_str());
-    unsigned char *output;
+    typedef struct {
+        int size;
+        const unsigned char *data;
+    } copy_collector_output_t;
+    copy_collector_output_t output;
     mc.process_binary((const unsigned char *)&input_data[0], input_data.size(), Picarus::copy_collector, &output);
     double val;
-    Picarus::double_fromstring(output + sizeof(int), *((int*)output), &val);
+    Picarus::double_fromstring(output.data, output.size, &val);
     printf("Confidence[%f]\n", val);
-    delete [] output;
+    delete [] output.data;
     return 0;
 }

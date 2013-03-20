@@ -35,20 +35,21 @@ ModelChain::~ModelChain() {
 }
 
 void ModelChain::process_binary(const unsigned char *input, int size, void (*collector)(const unsigned char *, int, void *), void *collector_state) {
-    const unsigned char *cur_buf = NULL;
-    const unsigned char *next_buf = NULL;
+    typedef struct {
+        int size;
+        const unsigned char *data;
+    } copy_collector_output_t;
+    copy_collector_output_t cur_buf = {size, input};
+    copy_collector_output_t next_buf = {};
     for (int i = 0; i < models.size(); ++i) {
-        models[i]->process_binary(input, size, copy_collector, &next_buf);
-        if (cur_buf != NULL)
-            delete [] cur_buf;
+        models[i]->process_binary(cur_buf.data, cur_buf.size, copy_collector, &next_buf);
+        if (cur_buf.data != input)
+            delete [] cur_buf.data;
         cur_buf = next_buf;
-        next_buf = NULL;
-        size = *((int *)cur_buf);
-        input = cur_buf + sizeof(int);
     }
-    collector(input, size, collector_state);
-    if (cur_buf != NULL)
-        delete [] cur_buf;
+    collector(cur_buf.data, cur_buf.size, collector_state);
+    if (cur_buf.data != input)
+        delete [] cur_buf.data;
 }
 
 } // namespace Picarus

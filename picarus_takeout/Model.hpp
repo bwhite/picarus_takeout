@@ -9,6 +9,7 @@ public:
     Model();
     virtual ~Model();
     virtual void process_binary(const unsigned char *input, int size, void (*collector)(const unsigned char *, int, void *), void *collector_state) = 0;
+    virtual unsigned char *process_binary(const unsigned char *input, int size, int *size_out);
 };
 void ndarray_fromstring(const unsigned char *input, int size, std::vector<double> *vec, std::vector<int> *shape);
 void ndarray_tostring(const std::vector<double> &vec, const std::vector<int> &shape, void (*collector)(const unsigned char *, int, void *), void *collector_state);

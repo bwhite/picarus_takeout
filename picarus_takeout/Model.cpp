@@ -9,6 +9,17 @@ namespace Picarus {
 Model::Model() {}
 Model::~Model() {}
 
+unsigned char *Model::process_binary(const unsigned char *input, int size, int *size_out) {
+    typedef struct {
+        int size;
+        unsigned char *data;
+    } copy_collector_output_t;
+    copy_collector_output_t output;
+    process_binary(input, size, copy_collector, &output);
+    *size_out = output.size;
+    return output.data;
+}
+
 void ndarray_tostring(const std::vector<double> &vec, const std::vector<int> &shape, void (*collector)(const unsigned char *, int, void *), void *collector_state) {
     msgpack::type::tuple<std::vector<double>, std::vector<int> > tuple(vec, shape);
     msgpack::sbuffer sbuf;
@@ -43,11 +54,14 @@ void double_tostring(double val, void (*collector)(const unsigned char *, int, v
 }
 
 void copy_collector(const unsigned char *input, int size, void *state) {
-    unsigned char **buf = (unsigned char **)state;
-    *buf = new unsigned char[size + sizeof(int)];
-    printf("CC[%d]\n", size);
-    *((int *)*buf) = size;
-    memcpy(*buf + sizeof(int), input, size);
+    typedef struct {
+        int size;
+        unsigned char *data;
+    } copy_collector_output_t;
+    copy_collector_output_t *output = (copy_collector_output_t *)state;
+    output->data = new unsigned char[size];
+    output->size = size;
+    memcpy(output->data, input, output->size);
 }
 
 unsigned char *image_bgr_fromstring(const unsigned char *binary_image, int size, int *height_out, int *width_out) {

@@ -17,4 +17,10 @@ cdef extern from "picarus_takeout.hpp" namespace "Picarus":
     ImagePreprocessor* image_preprocessor_factory(cJSON *cjs)
     void delete_array(void *image)
     HistogramImageFeature* histogram_image_feature_factory(cJSON *cjs)
-    LinearClassifier* linear_classifier_factory(cJSON *cjs)                                                                                                                
+    LinearClassifier* linear_classifier_factory(cJSON *cjs)
+
+cdef extern from "ModelChain.hpp" namespace "Picarus":
+    cdef cppclass ModelChain:
+        ModelChain(char *)
+        void process_binary(unsigned char *input, int size, void (*collector)(const unsigned char *, int, void *), void *collector_state);
+        double decision_function(double *feature, int size)
