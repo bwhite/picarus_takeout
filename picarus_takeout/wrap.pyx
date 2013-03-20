@@ -115,6 +115,7 @@ cdef class LinearClassifier(object):
             raise ValueError('Feature must be a vector of doubles')
         return self.lc.decision_function(<double *>feature.data, feature.size)
 
+
 cdef class ModelChain(object):
     cdef classes.ModelChain *mc
     cdef classes.Model *model
@@ -140,6 +141,12 @@ cdef class ModelChain(object):
         py_string = output[:size_out]  # NOTE: Copies the data
         classes.delete_array(output)
         return py_string
+
+
+cdef class ModelLink(ModelChain):
+
+    def __init__(self, json_config):
+        super(ModelLink, self).__init__(json.dumps([json.loads(json_config)]))
 
 def double_fromstring(data):
     cdef char *data_charp = data

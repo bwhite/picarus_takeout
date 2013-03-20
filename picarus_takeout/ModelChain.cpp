@@ -12,16 +12,15 @@ ModelChain::ModelChain(const char *json_config) {
     models.resize(num_links);
     for (int i = 0; i < num_links; ++i) {
         cJSON *link = cJSON_GetArrayItem(cjs, i);
-        cJSON *model = cJSON_GetObjectItem(link, "model");
-        cJSON *name = cJSON_GetObjectItem(model, "name");
+        cJSON *name = cJSON_GetObjectItem(link, "name");
         if (!name || name->type != cJSON_String|| !name->valuestring)
             return;
         if (!strcmp("picarus.ImagePreprocessor", name->valuestring))
-            models[i] = image_preprocessor_factory(model);
+            models[i] = image_preprocessor_factory(link);
         else if (!strcmp("picarus.HistogramImageFeature", name->valuestring))
-            models[i] = histogram_image_feature_factory(model);
+            models[i] = histogram_image_feature_factory(link);
         else if (!strcmp("picarus.LinearClassifier", name->valuestring))
-            models[i] = linear_classifier_factory(model);
+            models[i] = linear_classifier_factory(link);
         else
             return;
     }
