@@ -1,11 +1,14 @@
 Picarus Takeout
 
-License: Apache 2.0
+License: Apache 2.0 License
 
 Dependencies
-- OpenCV 2.4.4(http://opencv.org/): Image IO, Image Resize, Image Color Convert
-- Msgpack(https://github.com/msgpack/msgpack-c): Serialization
-- Blas(http://math-atlas.sourceforge.net/): Fast math
+- OpenCV 2.4.4(http://opencv.org/): Image IO, Image Resize, Image Color Convert (BSD License)
+- Msgpack(https://github.com/msgpack/msgpack-c): Serialization (Apache 2.0 License)
+- Blas(http://math-atlas.sourceforge.net/): Fast math (BSD License)
+
+Included Dependencies (in source)
+- cJSON(http://sourceforge.net/projects/cjson/): JSON Parsing  (MIT License)
 
 Linux Install (Ubuntu)
 - Build OpenCV 2.4.4 from source
