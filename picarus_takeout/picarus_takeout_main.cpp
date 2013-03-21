@@ -10,7 +10,7 @@
 #include "ModelChain.hpp"
 
 void read_file(const char *fn, std::string *str) {
-    std::ifstream t(fn);
+    std::ifstream t(fn, std::ios::binary);
     t.seekg(0, std::ios::end);   
     str->reserve(t.tellg());
     t.seekg(0, std::ios::beg);
@@ -19,7 +19,7 @@ void read_file(const char *fn, std::string *str) {
 }
 
 void read_file(const char *fn, std::vector<char> *str) {
-    std::ifstream t(fn);
+    std::ifstream t(fn, std::ios::binary);
     t.seekg(0, std::ios::end);   
     str->reserve(t.tellg());
     t.seekg(0, std::ios::beg);
