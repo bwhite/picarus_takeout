@@ -80,7 +80,7 @@ unsigned char *ImagePreprocessor::asarray(const unsigned char *binary_image, int
             int new_size = orig_width > orig_height ? orig_height : orig_width;
             image_cropped_data = new unsigned char[new_size * new_size * 3];
             cv::Mat image_cropped(new_size, new_size, CV_8UC3, image_cropped_data);
-            cv::getRectSubPix(image, cv::Size2f(new_size, new_size),  cv::Point2f(orig_width / 2., orig_width / 2.), image_cropped);
+            cv::getRectSubPix(image, cv::Size2f(new_size, new_size),  cv::Point2f(orig_width / 2., orig_height / 2.), image_cropped);
             image = image_cropped;
             orig_width = orig_height = new_size;
         }
