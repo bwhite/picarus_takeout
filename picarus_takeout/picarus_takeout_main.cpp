@@ -37,6 +37,8 @@ int main(int argc, char **argv) {
     read_file(argv[1], &json_config);
     std::vector<char> input_data;
     read_file(argv[2], &input_data);
+    std::cout << "JSON Config Size (bytes): " << json_config.size() << std::endl;
+    std::cout << "Input Image Size (bytes): " << input_data.size() << std::endl;
 
     Picarus::ModelChain mc(json_config.c_str());
     typedef struct {

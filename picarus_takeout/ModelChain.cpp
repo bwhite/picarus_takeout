@@ -6,23 +6,30 @@ namespace Picarus {
 
 ModelChain::ModelChain(const char *json_config) {
     cJSON *cjs = cJSON_Parse(json_config);
-    if (cjs->type != cJSON_Array)
+    if (cjs->type != cJSON_Array) {
+        printf("Error: Bad JSON\n");
         return;
+    }
     int num_links = cJSON_GetArraySize(cjs);
+    printf("ModelChain: NumLinks[%d]\n", num_links);
     models.resize(num_links);
     for (int i = 0; i < num_links; ++i) {
         cJSON *link = cJSON_GetArrayItem(cjs, i);
         cJSON *name = cJSON_GetObjectItem(link, "name");
-        if (!name || name->type != cJSON_String|| !name->valuestring)
+        if (!name || name->type != cJSON_String|| !name->valuestring) {
+            printf("Error: Bad JSON\n");
             return;
+        }
         if (!strcmp("picarus.ImagePreprocessor", name->valuestring))
             models[i] = image_preprocessor_factory(link);
         else if (!strcmp("picarus.HistogramImageFeature", name->valuestring))
             models[i] = histogram_image_feature_factory(link);
         else if (!strcmp("picarus.LinearClassifier", name->valuestring))
             models[i] = linear_classifier_factory(link);
-        else
+        else {
+            printf("Error: Bad JSON\n");
             return;
+        }
     }
     cJSON_Delete(cjs);
 }

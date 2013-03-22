@@ -2,6 +2,7 @@
 #define PICARUS_MODEL
 #include <string>
 #include <vector>
+#include <cstdio>
 
 namespace Picarus {
 class Model {
