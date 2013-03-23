@@ -1,124 +1,76 @@
-/*
-class NBNNClassifier(MultiClassClassifier):
-    """Multi-class classifier using Naive Bayes Nearest Neighbor
-
-    Pros
-    - Simple, non-parametric
-
-    Cons
-    - Requires NN lookup for # descriptors * # classes which can be slow
-    """
-    def __init__(self):
-        self.db = None
-        self.classes = None
-        self.dist = distpy.L2Sqr()
-
-    def train(self, label_values):
-        self.classes = []
-        class_to_num = {}
-        self.db = {}  # [class] = features
-        # Compute features
-        for cur_class, features in label_values:
-            if cur_class not in class_to_num:
-                class_to_num[cur_class] = len(class_to_num)
-                self.classes.append(cur_class)
-            cur_class = class_to_num[cur_class]
-            if features.ndim == 1:
-                print('Skipping due to no features')
-                continue
-            self.db.setdefault(cur_class, []).append(features)
-        for cur_class, features in self.db.items():
-            self.db[cur_class] = np.vstack(self.db[cur_class])
-
-    def __call__(self, value):
-        class_dists = {}  # [class] = total_dist
-        for cur_class in self.db:
-            dist_indeces = self.dist.nns(self.db[cur_class], value)
-            class_dists[cur_class] = np.sum(dist_indeces[:, 0])
-        return [{'class': self.classes[x[0]], 'distance': x[1]} for x in sorted(class_dists.items(),
-                                                                                key=lambda x: x[1])]
-
-class LocalNBNNClassifier(NBNNClassifier):
-    """Multi-class classifier using Local Naive Bayes Nearest Neighbor
-
-    Pros
-    - Simple, non-parametric
-    - Faster than NBNN because it only looks at K neighbors (joint space for all classes)
-
-    Cons
-    - Requires K-NN lookup for # descriptors
-    - Approximates NBNN
-    """
-    def __init__(self, k=10, *args, **kw):
-        super(LocalNBNNClassifier, self).__init__(*args, **kw)
-        self.k = k
-
-    def train(self, label_values):
-        self.classes = []
-        self.class_nums = []
-        class_to_num = {}
-        self.db = []  # features
-        # Compute features
-        for cur_class, features in label_values:
-            if cur_class not in class_to_num:
-                class_to_num[cur_class] = len(class_to_num)
-                self.classes.append(cur_class)
-            if features.ndim == 1:
-                print('Skipping due to no features')
-                continue
-            self.class_nums += [class_to_num[cur_class]] * len(features)
-            self.db.append(features)
-        self.db = np.vstack(self.db)
-        self.class_nums = np.array(self.class_nums)
-
-    def __call__(self, value):
-        class_dists = {}  # [class] = total_dist
-        for feature in value:
-            dist_indeces = self.dist.knn(self.db, feature, self.k + 1)
-            dist_b = dist_indeces[self.k, 0]
-            class_min_dists = {}
-            for dist, index in dist_indeces[:self.k, :]:
-                cur_class = self.class_nums[index]
-                class_min_dists[cur_class] = min(class_min_dists.get(cur_class, float('inf')), dist)
-            for cur_class, dist_c in class_min_dists.items():
-                try:
-                    class_dists[cur_class] += dist_c - dist_b
-                except KeyError:
-                    class_dists[cur_class] = dist_c - dist_b
-        return [{'class': self.classes[x[0]], 'distance': x[1]} for x in sorted(class_dists.items(),
-                                                                                key=lambda x: x[1])]
- */
-
-
-#include "LinearClassifier.hpp"
+#include "LocalNBNNClassifier.hpp"
 #include <cmath>
+#include <algorithm>
 #include "picarus_math.h"
+#include "knearest_neighbor.h"
+#include <cstring>
+#include <stdexcept>
 
 namespace Picarus {
-LocalNBNNClassifier::LocalNBNNClassifier(double *features, int num_features, int feature_size, const std::vector<std::string> > &labels, int max_results) :  num_features(num_features), feature_size(feature_size), labels(labels), max_results(max_results) {
-    // TODO: Copy/pack features
+LocalNBNNClassifier::LocalNBNNClassifier(double *features, int num_features, int feature_size, const std::vector<std::string> &labels, int max_results) :  num_features(num_features), feature_size(feature_size), labels(labels), max_results(max_results) {
+    this->features = new double[num_features * feature_size];
+    memcpy(this->features, features, num_features * feature_size * sizeof(double));
 }
 
 LocalNBNNClassifier::~LocalNBNNClassifier() {
+    delete [] this->features;
 }
 
-std::vector<std::pair<> > LocalNBNNClassifier::classify(double *features, int num_features, int feature_size) {
-    if (this->feature_size == feature_size)
-        return NAN;
-    std::vector<std::pair<std::string, double> > *dist_classes  = new std::vector<std::pair<std::string, double> >();
-    dist_classes->reserve()
-    for (int i = 0; i < num_features; ++i) {
-            
-    }
 
-        
+std::map<int, double> *LocalNBNNClassifier::knn(double *feature, int feature_size) {
+    if (feature_size != this->feature_size)
+        return NULL;
+    int *neighbor_indeces = new int[max_results + 1];
+    double *neighbor_dists = new double[max_results + 1];
+    std::map<int, double> *class_min_dists = new std::map<int, double>();
+    int total_results = knnl2sqr(feature, this->features, neighbor_indeces,
+                                 neighbor_dists, this->num_features, feature_size,
+                                 max_results + 1);
+    for (int i = 0; i < total_results - 1; ++i) {
+        double prev_val;
+        try {
+            prev_val = (*class_min_dists).at(neighbor_indeces[i]);
+        } catch (const std::out_of_range& oor) {
+            prev_val = INFINITY;
+        }
+        double cur_val = neighbor_dists[i] - neighbor_dists[total_results - 1];
+        if (cur_val < prev_val)
+            (*class_min_dists)[neighbor_indeces[i]] = cur_val;
+    }
+    delete [] neighbor_indeces;
+    delete [] neighbor_dists;
+    return class_min_dists;
+}
+
+std::vector<std::pair<double, std::string> > *LocalNBNNClassifier::classify(double *features, int num_features, int feature_size) {
+    if (this->feature_size == feature_size)
+        return NULL;
+    std::map<int, double> class_dists;
+    for (int i = 0; i < num_features; ++i, features += feature_size) {
+        // Compute K-NN between current input feature and all DB features
+        std::map<int, double> *class_min_dists = knn(features, feature_size);
+        if (class_min_dists == NULL)
+            return NULL;
+        // Update class dists with K-NN Results
+        std::map<int, double>::const_iterator itr;
+        for (itr = class_min_dists->begin(); itr != class_min_dists->end(); ++itr)
+            class_dists[itr->first] = class_dists[itr->first] + itr->second;
+        delete class_min_dists;
+    }
+    std::vector<std::pair<double, std::string> > *class_dists_out  = new std::vector<std::pair<double, std::string> >();
+    class_dists_out->reserve(class_dists.size());
+    std::map<int, double>::const_iterator itr;
+    for (itr = class_dists.begin(); itr != class_dists.end(); ++itr)
+        class_dists_out->push_back(std::make_pair(itr->second, labels[itr->first]));
+    std::sort(class_dists_out->begin(), class_dists_out->end());
+    return class_dists_out;
 }
 
 void LocalNBNNClassifier::process_binary(const unsigned char *input, int size, BinaryCollector *collector) {
     std::vector<double> vec;
     std::vector<int> shape;
     ndarray_fromstring(input, size, &vec, &shape);
-    double conf = decision_function(&vec[0], vec.size());
-    double_tostring(conf, collector);
+    std::vector<std::pair<double, std::string> > *class_dists = classify(&vec[0], shape[0], shape[1]);
+    double_strings_tostring(*class_dists, collector);
 }
 } // namespace Picarus

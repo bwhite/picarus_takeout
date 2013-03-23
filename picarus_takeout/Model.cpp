@@ -16,6 +16,18 @@ unsigned char *Model::process_binary(const unsigned char *input, int size, int *
     return output;
 }
 
+void double_strings_fromstring(const unsigned char *input, int size, std::vector<std::pair<double, std::string> > *val) {
+    msgpack::unpacked msg;
+    msgpack::unpack(&msg, (const char *)input, size);
+    msgpack::object obj = msg.get();
+    obj >> *val;
+}
+
+void double_strings_tostring(const std::vector<std::pair<double, std::string> > &double_strings,  BinaryCollector *collector) {
+    msgpack::sbuffer sbuf;
+    msgpack::pack(sbuf, double_strings);
+    (*collector)((const unsigned char *)sbuf.data(), sbuf.size());
+}
 
 void ndarray_tostring(const std::vector<double> &vec, const std::vector<int> &shape, BinaryCollector *collector) {
     msgpack::type::tuple<std::vector<double>, std::vector<int> > tuple(vec, shape);
@@ -25,6 +37,7 @@ void ndarray_tostring(const std::vector<double> &vec, const std::vector<int> &sh
 }
 
 void ndarray_fromstring(const unsigned char *input, int size, std::vector<double> *vec, std::vector<int> *shape) {
+    // TODO: Look at optimizing this
     msgpack::unpacked msg;
     msgpack::sbuffer sbuf;
     sbuf.write((const char *)input, size);
@@ -37,6 +50,7 @@ void ndarray_fromstring(const unsigned char *input, int size, std::vector<double
 }
 
 void double_fromstring(const unsigned char *input, int size, double *val) {
+    // TODO: Look at optimizing this
     msgpack::unpacked msg;
     msgpack::sbuffer sbuf;
     sbuf.write((const char *)input, size);
