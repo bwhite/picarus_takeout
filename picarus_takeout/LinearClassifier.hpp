@@ -6,13 +6,14 @@
 namespace Picarus {
 class LinearClassifier : public Model {
 private:
-    std::vector<double> coefficients;
-    double intercept;
+    double *coefficients;
+    const int num_coefficients;
+    const double intercept;
 public:
-    LinearClassifier(std::vector<double> coefficients, double intercept);
+    LinearClassifier(double *coefficients, int num_coefficients, double intercept);
     ~LinearClassifier();
     double decision_function(double *feature, int size);
-    virtual void process_binary(const unsigned char *input, int size, void (*collector)(const unsigned char *, int, void *), void *collector_state);
+    virtual void process_binary(const unsigned char *input, int size, BinaryCollector *collector);
 };
 
 } // namespace Picarus

@@ -33,23 +33,22 @@ int main(int argc, char **argv) {
         std::cerr << "Usage: " << argv[0] << " <config_json_path> <input_path>" << std::endl;
         return 1;
     }
-    std::string json_config;
-    read_file(argv[1], &json_config);
+    std::vector<char> msgpack_binary;
+    read_file(argv[1], &msgpack_binary);
     std::vector<char> input_data;
     read_file(argv[2], &input_data);
-    std::cout << "JSON Config Size (bytes): " << json_config.size() << std::endl;
+    std::cout << "JSON Config Size (bytes): " << msgpack_binary.size() << std::endl;
     std::cout << "Input Image Size (bytes): " << input_data.size() << std::endl;
 
-    Picarus::ModelChain mc(json_config.c_str());
-    typedef struct {
-        int size;
-        const unsigned char *data;
-    } copy_collector_output_t;
-    copy_collector_output_t output;
-    mc.process_binary((const unsigned char *)&input_data[0], input_data.size(), Picarus::copy_collector, &output);
+    Picarus::ModelChain mc(&msgpack_binary[0], msgpack_binary.size());
+
+    int size;
+    unsigned char *data;
+    Picarus::CopyCollector collector(&data, &size);
+    mc.process_binary((const unsigned char *)&input_data[0], input_data.size(), &collector);
     double val;
-    Picarus::double_fromstring(output.data, output.size, &val);
+    Picarus::double_fromstring(data, size, &val);
     printf("Confidence[%f]\n", val);
-    delete [] output.data;
+    delete [] data;
     return 0;
 }

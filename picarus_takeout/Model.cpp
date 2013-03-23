@@ -10,22 +10,18 @@ Model::Model() {}
 Model::~Model() {}
 
 unsigned char *Model::process_binary(const unsigned char *input, int size, int *size_out) {
-    typedef struct {
-        int size;
-        unsigned char *data;
-    } copy_collector_output_t;
-    copy_collector_output_t output;
-    process_binary(input, size, copy_collector, &output);
-    *size_out = output.size;
-    return output.data;
+    unsigned char *output;
+    CopyCollector collector(&output, size_out);
+    process_binary(input, size, &collector);
+    return output;
 }
 
 
-void ndarray_tostring(const std::vector<double> &vec, const std::vector<int> &shape, void (*collector)(const unsigned char *, int, void *), void *collector_state) {
+void ndarray_tostring(const std::vector<double> &vec, const std::vector<int> &shape, BinaryCollector *collector) {
     msgpack::type::tuple<std::vector<double>, std::vector<int> > tuple(vec, shape);
     msgpack::sbuffer sbuf;
     msgpack::pack(sbuf, tuple);
-    collector((const unsigned char *)sbuf.data(), sbuf.size(), collector_state);
+    (*collector)((const unsigned char *)sbuf.data(), sbuf.size());
 }
 
 void ndarray_fromstring(const unsigned char *input, int size, std::vector<double> *vec, std::vector<int> *shape) {
@@ -48,21 +44,10 @@ void double_fromstring(const unsigned char *input, int size, double *val) {
     msg.get().convert(val);
 }
 
-void double_tostring(double val, void (*collector)(const unsigned char *, int, void *), void *collector_state) {
+void double_tostring(double val, BinaryCollector *collector) {
     msgpack::sbuffer sbuf;
     msgpack::pack(sbuf, val);
-    collector((const unsigned char *)sbuf.data(), sbuf.size(), collector_state);
-}
-
-void copy_collector(const unsigned char *input, int size, void *state) {
-    typedef struct {
-        int size;
-        unsigned char *data;
-    } copy_collector_output_t;
-    copy_collector_output_t *output = (copy_collector_output_t *)state;
-    output->data = new unsigned char[size];
-    output->size = size;
-    memcpy(output->data, input, output->size);
+    (*collector)((const unsigned char *)sbuf.data(), sbuf.size());
 }
 
 unsigned char *image_bgr_fromstring(const unsigned char *binary_image, int size, int *height_out, int *width_out) {

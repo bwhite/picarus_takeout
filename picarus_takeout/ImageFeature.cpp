@@ -49,7 +49,7 @@ double *ImageFeature::pyramid_histogram(unsigned int *label_image, int height, i
 }
 
 
-void ImageFeature::process_binary(const unsigned char *input, int size, void (*collector)(const unsigned char *, int, void *), void *collector_state) {
+void ImageFeature::process_binary(const unsigned char *input, int size, BinaryCollector *collector) {
     int height, width;
     unsigned char * image = image_bgr_fromstring(input, size, &height, &width);
     int feature_size;
@@ -57,7 +57,7 @@ void ImageFeature::process_binary(const unsigned char *input, int size, void (*c
     std::vector<double> vec(feature, feature + feature_size);  // TODO: Remove copy!
     std::vector<int> shape(1);
     shape[0] = feature_size;
-    ndarray_tostring(vec, shape, collector, collector_state);
+    ndarray_tostring(vec, shape, collector);
     delete [] feature;
     delete [] image;
 }

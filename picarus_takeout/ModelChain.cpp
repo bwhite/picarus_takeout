@@ -3,37 +3,37 @@
 #include <cstring>
 
 namespace Picarus {
-
-ModelChain::ModelChain(const char *json_config) {
-    cJSON *cjs = cJSON_Parse(json_config);
-    if (cjs->type != cJSON_Array) {
-        printf("Error: Bad JSON\n");
-        return;
-    }
-    int num_links = cJSON_GetArraySize(cjs);
-    printf("ModelChain: NumLinks[%d]\n", num_links);
-    models.resize(num_links);
-    for (int i = 0; i < num_links; ++i) {
-        cJSON *link = cJSON_GetArrayItem(cjs, i);
-        cJSON *name = cJSON_GetObjectItem(link, "name");
-        if (!name || name->type != cJSON_String|| !name->valuestring) {
-            printf("Error: Bad JSON\n");
-            return;
-        }
-        if (!strcmp("picarus.ImagePreprocessor", name->valuestring))
-            models[i] = image_preprocessor_factory(link);
-        else if (!strcmp("picarus.HistogramImageFeature", name->valuestring))
-            models[i] = histogram_image_feature_factory(link);
-        else if (!strcmp("picarus.LinearClassifier", name->valuestring))
-            models[i] = linear_classifier_factory(link);
+ModelChain::ModelChain(const char *msgpack_binary, int size) {
+    msgpack::unpacked msg;
+    msgpack::unpack(&msg, msgpack_binary, size);
+    msgpack::object obj = msg.get();
+    std::vector<std::map<std::string, msgpack::object> > models;
+    obj >> models;
+    std::vector<std::map<std::string, msgpack::object> >::iterator model;
+    this->models.reserve(models.size());
+    for (model = models.begin(); model != models.end(); ++model) {
+        std::string name;
+        std::map<std::string, msgpack::object> kw;
+        model->at(std::string("name")) >> name;
+        model->at(std::string("kw")) >> kw;
+        if (!name.compare("picarus.ImagePreprocessor"))
+            this->models.push_back(image_preprocessor_factory(&kw));
+        else if (!name.compare("picarus.HistogramImageFeature"))
+            this->models.push_back(histogram_image_feature_factory(&kw));
+        else if (!name.compare("picarus.LinearClassifier"))
+            this->models.push_back(linear_classifier_factory(&kw));
         else {
-            printf("Error: Bad JSON\n");
+            printf("Error: Unknown name[%s]\n", name.c_str());
+            this->models.resize(0);
+            return;
+        }
+        if (this->models.back() == NULL) {
+            printf("Error: Could not create[%s]\n", name.c_str());
+            this->models.resize(0);
             return;
         }
     }
-    cJSON_Delete(cjs);
 }
-
 
 ModelChain::~ModelChain() {
     for (int i = 0; i < models.size(); ++i) {
@@ -41,22 +41,21 @@ ModelChain::~ModelChain() {
     }
 }
 
-void ModelChain::process_binary(const unsigned char *input, int size, void (*collector)(const unsigned char *, int, void *), void *collector_state) {
-    typedef struct {
-        int size;
-        const unsigned char *data;
-    } copy_collector_output_t;
-    copy_collector_output_t cur_buf = {size, input};
-    copy_collector_output_t next_buf = {};
+void ModelChain::process_binary(const unsigned char *input, int size, BinaryCollector *collector) {
+    int cur_size = size, next_size;
+    const unsigned char *cur_data = input;
+    unsigned char *next_data;
+    CopyCollector collector_inner(&next_data, &next_size);
     for (int i = 0; i < models.size(); ++i) {
-        models[i]->process_binary(cur_buf.data, cur_buf.size, copy_collector, &next_buf);
-        if (cur_buf.data != input)
-            delete [] cur_buf.data;
-        cur_buf = next_buf;
+        models[i]->process_binary(cur_data, cur_size, &collector_inner);
+        if (cur_data != input)
+            delete [] cur_data;
+        cur_data = next_data;
+        cur_size = next_size;
     }
-    collector(cur_buf.data, cur_buf.size, collector_state);
-    if (cur_buf.data != input)
-        delete [] cur_buf.data;
+    (*collector)(cur_data, cur_size);
+    if (cur_data != input)
+        delete [] cur_data;
 }
 
 } // namespace Picarus

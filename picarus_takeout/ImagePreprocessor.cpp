@@ -110,10 +110,10 @@ unsigned char *ImagePreprocessor::asarray(const unsigned char *binary_image, int
     return p;
 }
 
-void ImagePreprocessor::process_binary(const unsigned char *input, int size, void (*collector)(const unsigned char *, int, void *), void *collector_state) {
+void ImagePreprocessor::process_binary(const unsigned char *input, int size, BinaryCollector *collector) {
     int size_out;
     unsigned char *output = asbinary(input, size, &size_out);
-    collector(output, size_out, collector_state);
+    (*collector)(output, size_out);
     delete [] output;
 }
 } // namespace Picarus

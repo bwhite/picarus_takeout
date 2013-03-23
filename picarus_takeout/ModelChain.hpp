@@ -8,9 +8,9 @@ class ModelChain : public Model {
 protected:
     std::vector<Model*> models;
 public:
-    ModelChain(const char *json_config);
+    ModelChain(const char *msgpack_binary, int size);
     virtual ~ModelChain();
-    virtual void process_binary(const unsigned char *input, int size, void (*collector)(const unsigned char *, int, void *), void *collector_state);
+    virtual void process_binary(const unsigned char *input, int size, BinaryCollector *collector);
 };
 } // namespace Picarus
 #endif

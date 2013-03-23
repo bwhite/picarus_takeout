@@ -19,7 +19,7 @@ public:
     ~ImagePreprocessor();
     /* NOTE: Receiver must call picarus_delete_array(image) on the returned value */
     unsigned char *asbinary(const unsigned char *binary_image, int size, int *size_out);
-    virtual void process_binary(const unsigned char *input, int size, void (*collector)(const unsigned char *, int, void *), void *collector_state);
+    virtual void process_binary(const unsigned char *input, int size, BinaryCollector *collector);
 };
 } // namespace Picarus
 #endif

@@ -19,8 +19,6 @@ public:
     ~HistogramImageFeature();
     double *compute_feature(unsigned char *image, int height, int width, int *out_size);
 protected:
-    void color_mode_to_code();
-    float *convert_color(unsigned char *image, int height, int width);
     unsigned int *histogram_label_image(unsigned char *image, int height, int width, int *out_max_val);
 };
 } // namespace Picarus
