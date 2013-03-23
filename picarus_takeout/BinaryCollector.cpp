@@ -13,6 +13,7 @@ void CopyCollector::operator()(const unsigned char *output, int size) {
     if (output == NULL) {
         *(this->output) = NULL;
         *(this->size) = 0;
+        return;
     }
     *(this->output) = new unsigned char[size];
     *(this->size) = size;

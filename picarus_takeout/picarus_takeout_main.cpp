@@ -46,9 +46,13 @@ int main(int argc, char **argv) {
     unsigned char *data;
     Picarus::CopyCollector collector(&data, &size);
     mc.process_binary((const unsigned char *)&input_data[0], input_data.size(), &collector);
-    double val;
-    Picarus::double_fromstring(data, size, &val);
-    printf("Confidence[%f]\n", val);
-    delete [] data;
+    if (data == NULL) {
+        printf("Main: ModelChain returned NULL\n");
+    } else {
+        double val;
+        Picarus::double_fromstring(data, size, &val);
+        printf("Confidence[%f]\n", val);
+        delete [] data;
+    }
     return 0;
 }

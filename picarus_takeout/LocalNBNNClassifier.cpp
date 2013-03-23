@@ -95,18 +95,23 @@ class LocalNBNNClassifier(NBNNClassifier):
 #include "picarus_math.h"
 
 namespace Picarus {
-LocalNBNNClassifier::LocalNBNNClassifier(double *features, int num_features, int feature_size, const std::vector<std::string> > &labels) :  num_features(num_features), feature_size(feature_size), labels(labels) {
+LocalNBNNClassifier::LocalNBNNClassifier(double *features, int num_features, int feature_size, const std::vector<std::string> > &labels, int max_results) :  num_features(num_features), feature_size(feature_size), labels(labels), max_results(max_results) {
     // TODO: Copy/pack features
 }
 
 LocalNBNNClassifier::~LocalNBNNClassifier() {
 }
 
-double LocalNBNNClassifier::decision_function(double *feature, int size) {
-    // Verify size TODO: Is this how we want to exit if there is an error?
-    if (size != coefficients.size())
+std::vector<std::pair<> > LocalNBNNClassifier::classify(double *features, int num_features, int feature_size) {
+    if (this->feature_size == feature_size)
         return NAN;
-    return dot_product(&coefficients[0], feature, size) + intercept;
+    std::vector<std::pair<std::string, double> > *dist_classes  = new std::vector<std::pair<std::string, double> >();
+    dist_classes->reserve()
+    for (int i = 0; i < num_features; ++i) {
+            
+    }
+
+        
 }
 
 void LocalNBNNClassifier::process_binary(const unsigned char *input, int size, BinaryCollector *collector) {

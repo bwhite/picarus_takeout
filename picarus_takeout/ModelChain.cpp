@@ -53,6 +53,7 @@ void ModelChain::process_binary(const unsigned char *input, int size, BinaryColl
         cur_data = next_data;
         cur_size = next_size;
         if (next_data == NULL) {
+            printf("ModelChain: Model[%d] returned NULL\n", i);
             (*collector)(NULL, 0);
             return;
         }
