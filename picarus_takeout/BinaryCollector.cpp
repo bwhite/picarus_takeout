@@ -10,6 +10,10 @@ CopyCollector::~CopyCollector() {
 }
 
 void CopyCollector::operator()(const unsigned char *output, int size) {
+    if (output == NULL) {
+        *(this->output) = NULL;
+        *(this->size) = 0;
+    }
     *(this->output) = new unsigned char[size];
     *(this->size) = size;
     memcpy(*(this->output), output, size);

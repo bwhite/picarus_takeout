@@ -52,6 +52,11 @@ void ModelChain::process_binary(const unsigned char *input, int size, BinaryColl
             delete [] cur_data;
         cur_data = next_data;
         cur_size = next_size;
+        if (next_data == NULL) {
+            (*collector)(NULL, 0);
+            return;
+        }
+            
     }
     (*collector)(cur_data, cur_size);
     if (cur_data != input)
