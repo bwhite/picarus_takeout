@@ -5,7 +5,7 @@ cdef class ModelChain(object):
 
     def __init__(self, msgpack_config):
         cdef char *msgpack_config_charp = msgpack_config
-        self.model = <classes.Model *> new classes.ModelChain(msgpack_config_charp)
+        self.model = <classes.Model *> new classes.ModelChain(msgpack_config_charp, len(msgpack_config))
         if self.model is NULL:
             raise ValueError
 

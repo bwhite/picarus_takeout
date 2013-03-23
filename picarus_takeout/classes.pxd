@@ -8,5 +8,5 @@ cdef extern from "Model.hpp" namespace "Picarus":
 
 cdef extern from "ModelChain.hpp" namespace "Picarus":
     cdef cppclass ModelChain:
-        ModelChain(char *)
+        ModelChain(char *, int)
         unsigned char *process_binary(unsigned char *input, int size, int *size_out)
