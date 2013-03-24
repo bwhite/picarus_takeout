@@ -67,9 +67,8 @@ BlocksImageMultiFeature* blocks_image_multi_feature_factory(std::map<std::string
 LocalNBNNClassifier* local_nbnn_classifier_factory(std::map<std::string, msgpack::object> *kw) {
     std::vector<double> features;
     std::vector<int> indeces;
-    double feature_size;
     std::vector<std::string> labels;
-    int max_results;
+    int feature_size, max_results;
 
     kw->at(std::string("features")) >> features;
     kw->at(std::string("indeces")) >> indeces;
@@ -78,6 +77,6 @@ LocalNBNNClassifier* local_nbnn_classifier_factory(std::map<std::string, msgpack
     kw->at(std::string("max_results")) >> max_results;
 
     // TODO: Check bounds/params
-    return new LocalNBNNClassifier(&features[0], &indeces[0], indeces.size() / feature_size, feature_size, labels, max_results);
+    return new LocalNBNNClassifier(&features[0], &indeces[0], features.size() / feature_size, feature_size, labels, max_results);
 }
 } // namespace Picarus

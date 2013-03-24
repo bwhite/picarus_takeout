@@ -52,12 +52,6 @@ BlocksImageMultiFeature::~BlocksImageMultiFeature() {
 
 
 double *BlocksImageMultiFeature::compute_multi_feature(unsigned char *image, int height, int width, int *num_features_out, int *feature_size_out) {
-    /* TODO:
-       - Move color functions into a separate file
-       - Convert image to color
-       - Iterate over levels
-       - Compute feature
-     */
     int cur_height = height, cur_width = width, prev_height = height, prev_width = width, total_blocks = 0;
     // Compute # of blocks so that we can preallocate the feature array
     for (int i = 0; i < levels; ++i) {
@@ -103,6 +97,7 @@ double *BlocksImageMultiFeature::compute_multi_feature(unsigned char *image, int
     }
     if (prev_image != image)
         delete [] prev_image;
+    printf("BlocksImage: num_features[%d]\n", total_blocks);
     *num_features_out = total_blocks;
     *feature_size_out = block_size * block_size * 3;
     return features;

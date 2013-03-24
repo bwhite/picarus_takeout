@@ -49,10 +49,18 @@ int main(int argc, char **argv) {
     if (data == NULL) {
         printf("Main: ModelChain returned NULL\n");
     } else {
+        std::vector<std::pair<double, std::string> > val;
+        Picarus::double_strings_fromstring(data, size, &val);
+        for (int i = 0; i < val.size(); ++i)
+            printf("%s %f\n", val[i].second.c_str(), val[i].first);
+        delete [] data;
+        /*
+        printf("Confidence[%f]\n", val);
         double val;
         Picarus::double_fromstring(data, size, &val);
         printf("Confidence[%f]\n", val);
         delete [] data;
+        */
     }
     return 0;
 }
