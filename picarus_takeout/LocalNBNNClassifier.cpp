@@ -5,15 +5,19 @@
 #include "knearest_neighbor.h"
 #include <cstring>
 #include <stdexcept>
+#include <iostream>
 
 namespace Picarus {
-LocalNBNNClassifier::LocalNBNNClassifier(double *features, int num_features, int feature_size, const std::vector<std::string> &labels, int max_results) :  num_features(num_features), feature_size(feature_size), labels(labels), max_results(max_results) {
+LocalNBNNClassifier::LocalNBNNClassifier(double *features, int *indeces, int num_features, int feature_size, const std::vector<std::string> &labels, int max_results) :  num_features(num_features), feature_size(feature_size), labels(labels), max_results(max_results) {
     this->features = new double[num_features * feature_size];
+    this->indeces = new int[num_features];
     memcpy(this->features, features, num_features * feature_size * sizeof(double));
+    memcpy(this->indeces, indeces, num_features * sizeof(int));
 }
 
 LocalNBNNClassifier::~LocalNBNNClassifier() {
     delete [] this->features;
+    delete [] this->indeces;
 }
 
 
@@ -43,25 +47,29 @@ std::map<int, double> *LocalNBNNClassifier::knn(double *feature, int feature_siz
 }
 
 std::vector<std::pair<double, std::string> > *LocalNBNNClassifier::classify(double *features, int num_features, int feature_size) {
-    if (this->feature_size == feature_size)
+    if (this->feature_size != feature_size) {
         return NULL;
-    std::map<int, double> class_dists;
+    }
+    std::map<std::string, double> class_dists;
     for (int i = 0; i < num_features; ++i, features += feature_size) {
         // Compute K-NN between current input feature and all DB features
         std::map<int, double> *class_min_dists = knn(features, feature_size);
-        if (class_min_dists == NULL)
+        if (class_min_dists == NULL) {
             return NULL;
+        }
         // Update class dists with K-NN Results
         std::map<int, double>::const_iterator itr;
-        for (itr = class_min_dists->begin(); itr != class_min_dists->end(); ++itr)
-            class_dists[itr->first] = class_dists[itr->first] + itr->second;
+        for (itr = class_min_dists->begin(); itr != class_min_dists->end(); ++itr) {
+            std::string name = labels[indeces[itr->first]];
+            class_dists[name] = class_dists[name] + itr->second;
+        }
         delete class_min_dists;
     }
     std::vector<std::pair<double, std::string> > *class_dists_out  = new std::vector<std::pair<double, std::string> >();
     class_dists_out->reserve(class_dists.size());
-    std::map<int, double>::const_iterator itr;
+    std::map<std::string, double>::const_iterator itr;
     for (itr = class_dists.begin(); itr != class_dists.end(); ++itr)
-        class_dists_out->push_back(std::make_pair(itr->second, labels[itr->first]));
+        class_dists_out->push_back(std::make_pair(itr->second, itr->first));
     std::sort(class_dists_out->begin(), class_dists_out->end());
     return class_dists_out;
 }
@@ -71,6 +79,13 @@ void LocalNBNNClassifier::process_binary(const unsigned char *input, int size, B
     std::vector<int> shape;
     ndarray_fromstring(input, size, &vec, &shape);
     std::vector<std::pair<double, std::string> > *class_dists = classify(&vec[0], shape[0], shape[1]);
+    if (class_dists == NULL) {
+        (*collector)(NULL, 0);
+        return;
+    }
+    for (int i = 0; i < class_dists->size(); ++i)
+        std::cout << i << " " << (*class_dists)[i].first << " " << (*class_dists)[i].second << std::endl;
     double_strings_tostring(*class_dists, collector);
+    delete class_dists;
 }
 } // namespace Picarus
