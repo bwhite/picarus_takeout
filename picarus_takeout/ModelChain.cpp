@@ -22,15 +22,19 @@ ModelChain::ModelChain(const char *msgpack_binary, int size) {
             this->models.push_back(histogram_image_feature_factory(&kw));
         else if (!name.compare("picarus.LinearClassifier"))
             this->models.push_back(linear_classifier_factory(&kw));
+        else if (!name.compare("picarus.BlocksImageMultiFeature"))
+            this->models.push_back(blocks_image_multi_feature_factory(&kw));
+        else if (!name.compare("picarus.LocalNBNNClassifier"))
+            this->models.push_back(local_nbnn_classifier_factory(&kw));
         else {
             printf("Error: Unknown name[%s]\n", name.c_str());
             this->models.resize(0);
-            return;
+            break;
         }
         if (this->models.back() == NULL) {
             printf("Error: Could not create[%s]\n", name.c_str());
             this->models.resize(0);
-            return;
+            break;
         }
     }
 }

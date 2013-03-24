@@ -59,6 +59,9 @@ BlocksImageMultiFeature* blocks_image_multi_feature_factory(std::map<std::string
     kw->at(std::string("block_size")) >> block_size;
     kw->at(std::string("mode")) >> mode;
     kw->at(std::string("levels")) >> levels;
+
+    // TODO: Check bounds/params
+    return new BlocksImageMultiFeature(block_size, mode, levels);
 }
 
 LocalNBNNClassifier* local_nbnn_classifier_factory(std::map<std::string, msgpack::object> *kw) {
