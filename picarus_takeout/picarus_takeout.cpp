@@ -51,4 +51,30 @@ LinearClassifier* linear_classifier_factory(std::map<std::string, msgpack::objec
     // TODO: Check bounds/params
     return new LinearClassifier(&coefficients[0], coefficients.size(), intercept);
 }
+
+
+BlocksImageMultiFeature* blocks_image_multi_feature_factory(std::map<std::string, msgpack::object> *kw) {
+    int block_size, levels;
+    std::string mode;
+    kw->at(std::string("block_size")) >> block_size;
+    kw->at(std::string("mode")) >> mode;
+    kw->at(std::string("levels")) >> levels;
+}
+
+LocalNBNNClassifier* local_nbnn_classifier_factory(std::map<std::string, msgpack::object> *kw) {
+    std::vector<double> features;
+    std::vector<int> indeces;
+    double feature_size;
+    std::vector<std::string> labels;
+    int max_results;
+
+    kw->at(std::string("features")) >> features;
+    kw->at(std::string("indeces")) >> indeces;
+    kw->at(std::string("feature_size")) >> feature_size;
+    kw->at(std::string("labels")) >> labels;
+    kw->at(std::string("max_results")) >> max_results;
+
+    // TODO: Check bounds/params
+    return new LocalNBNNClassifier(&features[0], &indeces[0], indeces.size() / feature_size, feature_size, labels, max_results);
+}
 } // namespace Picarus
