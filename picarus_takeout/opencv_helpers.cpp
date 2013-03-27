@@ -1,5 +1,13 @@
 #include "opencv_helpers.hpp"
 
+unsigned char *bgr_to_rgb(unsigned char *image, int height, int width) {
+    cv::Mat image_mat(height, width, CV_8UC3, image);
+    unsigned char *image_mat_color_data = new unsigned char[height * width * 3];
+    cv::Mat image_mat_color(height, width, CV_8UC3, image_mat_color_data);
+    cvtColor(image_mat, image_mat_color, CV_BGR2RGB);
+    return image_mat_color_data;
+}
+
 void color_mode_to_code(std::string mode, float *min_vals, float *max_vals, int *skip_cvt_color, int *code) {
     for (int i = 0; i < 3; ++i) {
         min_vals[i] = 0.;
@@ -52,4 +60,25 @@ float *convert_color(unsigned char *image, int height, int width, int code, int 
         cvtColor(image_matf, image_matf_color, code);
     }
     return image_matf_color_data;
+}
+
+void scale_image(float *image, int height, int width, float *min_vals, float *max_vals) {
+    // Check if we need to scale, some color spaces are already normalized
+    int need_scale = 0;
+    for (int j = 0; j < 3; ++j) {
+        if (min_vals[j] != 0.)
+            ++need_scale;
+        if (max_vals[j] != 1.)
+            ++need_scale;
+    }
+    if (!need_scale)
+        return;
+    int size = height * width * 3;
+    float scale_vals[3];
+    for (int j = 0; j < 3; ++j)
+        scale_vals[j] = 1. / (max_vals[j] - min_vals[j]);
+    for (int i = 0; i < size; i += 3) {
+        for (int j = 0; j < 3; ++j)
+            image[i + j] = (image[i + j] - min_vals[j]) * scale_vals[j];
+    }
 }

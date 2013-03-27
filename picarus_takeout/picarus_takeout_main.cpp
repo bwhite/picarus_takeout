@@ -18,6 +18,12 @@ void read_file(const char *fn, std::string *str) {
                 std::istreambuf_iterator<char>());
 }
 
+void write_file(const char *fn, char *data, int size) {
+    std::ofstream t(fn, std::ios::out | std::ios::binary);
+    t.write(data, size);
+    t.close();
+}
+
 void read_file(const char *fn, std::vector<char> *str) {
     std::ifstream t(fn, std::ios::binary);
     t.seekg(0, std::ios::end);   
@@ -29,8 +35,8 @@ void read_file(const char *fn, std::vector<char> *str) {
 
 
 int main(int argc, char **argv) {
-    if (argc != 3) {
-        std::cerr << "Usage: " << argv[0] << " <config_json_path> <input_path>" << std::endl;
+    if (argc != 4) {
+        std::cerr << "Usage: " << argv[0] << " <config_json_path> <input_path> <output_path>" << std::endl;
         return 1;
     }
     std::vector<char> msgpack_binary;
@@ -49,11 +55,23 @@ int main(int argc, char **argv) {
     if (data == NULL) {
         printf("Main: ModelChain returned NULL\n");
     } else {
+        std::vector<double> vec;
+        std::vector<int> shape;
+        Picarus::ndarray_fromstring(data, size, &vec, &shape);
+        for (int i = 0; i < shape.size(); ++i)
+            printf("%d\n", shape[i]);
+        write_file(argv[3], (char *)data, size);
+        /*for (int i = 0; i < vec.size(); ++i)
+          printf("%f\n", vec[i]); */
+        delete [] data;
+
+        /*
         std::vector<std::pair<double, std::string> > val;
         Picarus::double_strings_fromstring(data, size, &val);
         for (int i = 0; i < val.size(); ++i)
             printf("%s %f\n", val[i].second.c_str(), val[i].first);
         delete [] data;
+        */
         /*
         printf("Confidence[%f]\n", val);
         double val;

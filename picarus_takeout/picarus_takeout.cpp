@@ -29,17 +29,31 @@ HistogramImageFeature* histogram_image_feature_factory(std::map<std::string, msg
     std::vector<int> num_bins;
     kw->at(std::string("mode")) >> mode;
     kw->at(std::string("levels")) >> levels;
-    try {
-        kw->at(std::string("num_bins")) >> num_bins;
-    } catch (msgpack::type_error&) {
-        int num_bins_int;
-        kw->at(std::string("num_bins")) >> num_bins_int;
-        num_bins.resize(3);
-        for (int i = 0; i < 3; ++i)
-            num_bins[i] = num_bins_int;
-    }
+    kw->at(std::string("num_bins")) >> num_bins;
     // TODO: Check bounds/params
     return new HistogramImageFeature(mode, num_bins, levels);
+}
+
+PixelsImageFeature* pixels_image_feature_factory(std::map<std::string, msgpack::object> *kw) {
+    std::string mode;
+    kw->at(std::string("mode")) >> mode;
+    // TODO: Check bounds/params
+    return new PixelsImageFeature(mode);
+}
+
+GISTImageFeature* gist_image_feature_factory(std::map<std::string, msgpack::object> *kw) {
+    int num_blocks;
+    std::vector<int> orientations_per_scale;
+    kw->at(std::string("num_blocks")) >> num_blocks;
+    kw->at(std::string("orientations_per_scale")) >> orientations_per_scale;
+    // TODO: Check bounds/params
+    return new GISTImageFeature(num_blocks, orientations_per_scale);
+}
+
+HOGImageMaskFeature* hog_image_mask_feature_factory(std::map<std::string, msgpack::object> *kw) {
+    int bin_size;
+    kw->at(std::string("bin_size")) >> bin_size;
+    return new HOGImageMaskFeature(bin_size);
 }
 
 LinearClassifier* linear_classifier_factory(std::map<std::string, msgpack::object> *kw) {

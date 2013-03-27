@@ -1,45 +1,6 @@
 #include "opencv_helpers.hpp"
 #include "BlocksImageMultiFeature.hpp"
 #include <cstdio>
-/*
-class ImageBlocks(object):
-
-    def __init__(self, sbin, mode, num_sizes, num_points=None):
-        self.sbin = sbin
-        self.mode = mode
-        self.num_sizes = num_sizes
-        self.num_points = num_points
-
-    def _feature(self, image):
-        out = []
-        for block, coords in imfeat.BlockGenerator(image, imfeat.CoordGeneratorRect, output_size=(self.sbin, self.sbin), step_delta=(self.sbin, self.sbin)):
-            out.append(imfeat.convert_image(block, {'type': 'numpy', 'dtype': 'float32', 'mode': self.mode}).ravel())
-        return np.asfarray(out)
-
-    def compute_dense(self, image):
-        points = []
-        max_side = np.max(image.shape[:2])
-        for x in range(self.num_sizes):
-            if max_side <= 0:
-                break
-            image = imfeat.resize_image_max_side(image, max_side)
-            cur_points = self._feature(image)
-            if cur_points.size:
-                points.append(cur_points)
-            max_side = int(max_side / 2)
-        if points:
-            points = np.vstack(points)
-        else:
-            points = np.array([])
-        if self.num_points is not None:
-            points = random.sample(points, min(self.num_points, len(points)))
-        points = np.ascontiguousarray(points)
-        print(points.shape)
-        return points
-
-
- */
-
 
 namespace Picarus {
 
@@ -75,6 +36,7 @@ double *BlocksImageMultiFeature::compute_multi_feature(unsigned char *image, int
         int width_offset = cur_width % block_size / 2;
         printf("prev[%d,%d] cur[%d,%d] Offset[%d,%d]\n", prev_height, prev_width, cur_height, cur_width, height_offset, width_offset);
         float *cur_image_color = convert_color(cur_image, cur_height, cur_width, code, skip_cvt_color);
+        scale_image(cur_image_color, cur_height, cur_width, min_vals, max_vals);
         // Add features to list:  Take a deep breath before moving on...
         for (int j = 0; j < cur_height / block_size; ++j)
             for (int k = 0; k < cur_width / block_size; ++k) {
