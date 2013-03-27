@@ -56,6 +56,18 @@ HOGImageMaskFeature* hog_image_mask_feature_factory(std::map<std::string, msgpac
     return new HOGImageMaskFeature(bin_size);
 }
 
+BOVWImageFeature* bovw_image_feature_factory(std::map<std::string, msgpack::object> *kw) {
+    std::vector<double> clusters;
+    int num_clusters;
+    int levels;
+    
+    kw->at(std::string("clusters")) >> clusters;
+    kw->at(std::string("num_clusters")) >> num_clusters;
+    kw->at(std::string("levels")) >> levels;
+    // TODO: Check bounds/params
+    return new BOVWImageFeature(&clusters[0], num_clusters, clusters.size() / num_clusters, levels);
+}
+
 LinearClassifier* linear_classifier_factory(std::map<std::string, msgpack::object> *kw) {
     std::vector<double> coefficients;
     double intercept;

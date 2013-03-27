@@ -37,7 +37,7 @@ void BOVWImageFeature::process_binary(const unsigned char *input, int size, Bina
     std::vector<double> out_vec(feature, feature + feature_size);  // TODO: Remove copy!
     std::vector<int> out_shape(1);
     out_shape[0] = feature_size;
-    ndarray_tostring(out_vec, shape, collector);
+    ndarray_tostring(out_vec, out_shape, collector);
     delete [] feature;
     delete [] label_image;
 }

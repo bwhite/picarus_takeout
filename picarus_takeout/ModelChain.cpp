@@ -22,6 +22,8 @@ ModelChain::ModelChain(const char *msgpack_binary, int size) {
             this->models.push_back(histogram_image_feature_factory(&kw));
         else if (!name.compare("picarus.GISTImageFeature"))
             this->models.push_back(gist_image_feature_factory(&kw));
+        else if (!name.compare("picarus.BOVWImageFeature"))
+            this->models.push_back(bovw_image_feature_factory(&kw));
         else if (!name.compare("picarus.PixelsImageFeature"))
             this->models.push_back(pixels_image_feature_factory(&kw));
         else if (!name.compare("picarus.HOGImageMaskFeature"))
