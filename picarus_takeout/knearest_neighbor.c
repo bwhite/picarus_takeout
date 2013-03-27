@@ -60,12 +60,13 @@ int knnl2sqr(double *test_point, double *train_points, int *neighbor_indeces, do
   return max_valid_ind;
 }
 
-void nnsl2sqr(double *test_points, double *train_points, double *neighbor_dist_indeces, int num_test_points, int num_train_points, int num_dims) {
-  int i, j, k;
+void nnsl2sqr(double *test_points, double *train_points, unsigned int *neighbor_indeces, double *neighbor_distances, unsigned int num_test_points, unsigned int num_train_points, unsigned int num_dims) {
+  unsigned int i, j, k;
   double *train_points_orig = train_points;
-  for (i = 0; i < num_test_points; ++i, test_points += num_dims, neighbor_dist_indeces += 2) {
+  // TODO: Look into ways of vectorizing like we did for the l2sqr
+  for (i = 0; i < num_test_points; ++i, test_points += num_dims, ++neighbor_indeces, ++neighbor_distances) {
       double cur_dist = HUGE_VAL;
-      int cur_ind = 0;
+      unsigned int cur_ind = 0;
       for (j = 0, train_points = train_points_orig; j < num_train_points; ++j, train_points += num_dims) {
           double temp_dist = 0.;
           for (k = 0; k < num_dims; ++k)
@@ -75,7 +76,7 @@ void nnsl2sqr(double *test_points, double *train_points, double *neighbor_dist_i
               cur_ind = j;
           }
       }
-      neighbor_dist_indeces[0] = cur_dist;
-      neighbor_dist_indeces[1] = cur_ind;
+      *neighbor_distances = cur_dist;
+      *neighbor_indeces = cur_ind;
   }
 }

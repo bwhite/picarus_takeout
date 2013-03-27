@@ -4,7 +4,7 @@ namespace Picarus {
 class BinaryCollector {
 public:
     BinaryCollector();
-    ~BinaryCollector();
+    virtual ~BinaryCollector();
     virtual void operator()(const unsigned char *output, int size) = 0;
 };
 
@@ -14,7 +14,7 @@ private:
     int *size;
 public:
     CopyCollector(unsigned char **output, int *size);
-    ~CopyCollector();
+    virtual ~CopyCollector();
     virtual void operator()(const unsigned char *output, int size);
 };
 

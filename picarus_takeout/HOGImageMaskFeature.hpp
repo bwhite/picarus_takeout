@@ -10,7 +10,7 @@ private:
     int bin_size;
 public:
     HOGImageMaskFeature(int bin_size);
-    ~HOGImageMaskFeature();
+    virtual ~HOGImageMaskFeature();
     virtual double *compute_mask_feature(unsigned char *image, int height, int width, int *height_out, int *width_out, int *depth_out);
 };
 } // namespace Picarus

@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 2.8)
-add_executable(picarus LocalNBNNClassifier.cpp knearest_neighbor.c opencv_helpers.cpp PixelsImageFeature.cpp ImageMaskFeature.cpp ImageMultiFeature.cpp BinaryCollector.cpp BlocksImageMultiFeature.cpp picarus_takeout.cpp HOGImageMaskFeature.cpp features.cc ModelChain.cpp Model.cpp picarus_takeout_main.cpp ImagePreprocessor.cpp HistogramImageFeature.cpp ImageFeature.cpp picarus_math.c LinearClassifier.cpp pyramid_histogram_aux.c bovw_aux.c GISTImageFeature.cpp gist/gist.c gist/gist_wrapper.c gist/standalone_image.c)
+add_executable(picarus LocalNBNNClassifier.cpp knearest_neighbor.c opencv_helpers.cpp PixelsImageFeature.cpp ImageMaskFeature.cpp ImageMultiFeature.cpp BinaryCollector.cpp BlocksImageMultiFeature.cpp BOVWImageFeature.cpp picarus_takeout.cpp HOGImageMaskFeature.cpp features.cc ModelChain.cpp Model.cpp picarus_takeout_main.cpp ImagePreprocessor.cpp HistogramImageFeature.cpp ImageFeature.cpp picarus_math.c LinearClassifier.cpp pyramid_histogram_aux.c bovw_aux.c GISTImageFeature.cpp gist/gist.c gist/gist_wrapper.c gist/standalone_image.c)
 add_definitions(-DUSE_BLAS)
 if(CMAKE_COMPILER_IS_GNUCXX)
     set(CMAKE_CXX_FLAGS "-O2 -g -Wall -Wextra")

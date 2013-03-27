@@ -14,7 +14,7 @@ private:
     float max_vals[3];
 public:
     PixelsImageFeature(std::string mode);
-    ~PixelsImageFeature();
+    virtual ~PixelsImageFeature();
     double *compute_feature(unsigned char *image, int height, int width, int *out_size);
 };
 } // namespace Picarus

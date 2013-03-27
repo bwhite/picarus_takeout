@@ -12,7 +12,7 @@ private:
     int descriptor_size;
 public:
     GISTImageFeature(int num_blocks, std::vector<int> orientations_per_scale);
-    ~GISTImageFeature();
+    virtual ~GISTImageFeature();
     double *compute_feature(unsigned char *image, int height, int width, int *out_size);
 };
 } // namespace Picarus

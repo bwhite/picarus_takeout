@@ -16,7 +16,7 @@ private:
     float max_vals[3];
 public:
     BlocksImageMultiFeature(int block_size, std::string mode, int levels);
-    ~BlocksImageMultiFeature();
+    virtual ~BlocksImageMultiFeature();
     virtual double *compute_multi_feature(unsigned char *image, int height, int width, int *num_features_out, int *feature_size_out);
 };
 } // namespace Picarus

@@ -16,7 +16,7 @@ private:
     float max_vals[3];
 public:
     HistogramImageFeature(std::string mode, std::vector<int> num_bins, int levels);
-    ~HistogramImageFeature();
+    virtual ~HistogramImageFeature();
     double *compute_feature(unsigned char *image, int height, int width, int *out_size);
 protected:
     unsigned int *histogram_label_image(unsigned char *image, int height, int width, int *out_max_val);
