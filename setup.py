@@ -35,24 +35,10 @@ except ImportError:
 
 #  '-ftree-vectorizer-verbose=2'
 #, '-lblas' '-lopencv_highgui', '-lopencv_core','-lopencv_imgproc'
+SOURCES = 'LocalNBNNClassifier.cpp knearest_neighbor.c opencv_helpers.cpp PixelsImageFeature.cpp ImageMaskFeature.cpp ImageMultiFeature.cpp BinaryCollector.cpp BlocksImageMultiFeature.cpp picarus_takeout.cpp HOGImageMaskFeature.cpp features.cc ModelChain.cpp Model.cpp picarus_takeout_main.cpp ImagePreprocessor.cpp HistogramImageFeature.cpp ImageFeature.cpp picarus_math.c LinearClassifier.cpp pyramid_histogram_aux.c bovw_aux.c GISTImageFeature.cpp gist/gist.c gist/gist_wrapper.c gist/standalone_image.c'
+SOURCES = ['picarus_takeout/' + x for x in SOURCES.split()]
 ext_modules = [Extension("_picarus_takeout",
-                         ["picarus_takeout/wrap.pyx",
-                          "picarus_takeout/picarus_takeout.cpp",
-                          "picarus_takeout/ImagePreprocessor.cpp",
-                          "picarus_takeout/HistogramImageFeature.cpp",
-                          "picarus_takeout/LocalNBNNClassifier.cpp",
-                          "picarus_takeout/BlocksImageMultiFeature.cpp",
-                          "picarus_takeout/ImageMultiFeature.cpp",
-                          "picarus_takeout/knearest_neighbor.c",
-                          "picarus_takeout/ImageFeature.cpp",
-                          "picarus_takeout/picarus_math.c",
-                          "picarus_takeout/Model.cpp",
-                          "picarus_takeout/ModelChain.cpp",
-                          "picarus_takeout/BinaryCollector.cpp",
-                          "picarus_takeout/opencv_helpers.cpp",
-                          "picarus_takeout/LinearClassifier.cpp",
-                          "picarus_takeout/pyramid_histogram_aux.c",
-                          "picarus_takeout/bovw_aux.c"],
+                         ["picarus_takeout/wrap.pyx"] + SOURCES,
                          language="c++",
                          include_dirs=['picarus_takeout'],
                          extra_compile_args=['-I', np.get_include(), '-O3', '-Wall', '-mmmx', '-msse', '-msse2', '-DUSE_BLAS'],
