@@ -25,7 +25,8 @@ double *HOGImageMaskFeature::compute_mask_feature(unsigned char *image, int heig
     // Transpose from (chan, width, height) -> (height, width, chan)
     // while removing the last dimension from chan as it is always 0 in this
     // feature.  It was used in a later stage in the original code for detection.
-    double *mask_out = new double[(feature_shape[0] - 1) * feature_shape[1] * feature_shape[2]];
+    double *mask_out = new double[feature_shape[0] * feature_shape[1] * (feature_shape[2] - 1)];
+    printf("%d %d %d\n", feature_shape[0], feature_shape[1], feature_shape[2]);
     for (int i = 0; i < feature_shape[2] - 1; ++i) // depth
         for (int j = 0; j < feature_shape[1]; ++j) // width
             for (int k = 0; k < feature_shape[0]; ++k) // height
