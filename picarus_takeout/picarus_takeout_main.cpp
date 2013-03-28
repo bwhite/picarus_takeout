@@ -55,14 +55,18 @@ int main(int argc, char **argv) {
     if (data == NULL) {
         printf("Main: ModelChain returned NULL\n");
     } else {
-        std::vector<double> vec;
+
+/*        std::vector<double> vec;
         std::vector<int> shape;
         Picarus::ndarray_fromstring(data, size, &vec, &shape);
         for (int i = 0; i < shape.size(); ++i)
-            printf("%d\n", shape[i]);
+        printf("%d\n", shape[i]); */
+
         write_file(argv[3], (char *)data, size);
+
         /*for (int i = 0; i < vec.size(); ++i)
           printf("%f\n", vec[i]); */
+
         delete [] data;
 
         /*

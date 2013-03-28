@@ -36,6 +36,27 @@ void ndarray_tostring(const std::vector<double> &vec, const std::vector<int> &sh
     (*collector)((const unsigned char *)sbuf.data(), sbuf.size());
 }
 
+void image_detections_tostring(const std::string &image_str, const std::vector<double> &vec, const std::vector<int> &shape, BinaryCollector *collector) {
+    msgpack::type::tuple<std::string, std::vector<double>, std::vector<int> > tuple(image_str, vec, shape);
+    msgpack::sbuffer sbuf;
+    msgpack::pack(sbuf, tuple);
+    (*collector)((const unsigned char *)sbuf.data(), sbuf.size());
+}
+
+void image_detections_fromstring(const unsigned char *input, int size, std::string *image_str, std::vector<double> *vec, std::vector<int> *shape) {
+    msgpack::unpacked msg;
+    msgpack::sbuffer sbuf;
+    sbuf.write((const char *)input, size);
+    msgpack::unpack(&msg, sbuf.data(), sbuf.size());
+    msgpack::type::tuple<std::string, std::vector<double>, std::vector<int> > rvec(msg.get());
+    msgpack::type::tuple_element<msgpack::type::tuple<std::string, std::vector<double>, std::vector<int> >, 0> rvec0(rvec);
+    msgpack::type::tuple_element<msgpack::type::tuple<std::string, std::vector<double>, std::vector<int> >, 1> rvec1(rvec);
+    msgpack::type::tuple_element<msgpack::type::tuple<std::string, std::vector<double>, std::vector<int> >, 2> rvec2(rvec);
+    *image_str = rvec0.get();
+    *vec = rvec1.get();
+    *shape = rvec2.get();
+}
+
 void ndarray_fromstring(const unsigned char *input, int size, std::vector<double> *vec, std::vector<int> *shape) {
     // TODO: Look at optimizing this
     msgpack::unpacked msg;

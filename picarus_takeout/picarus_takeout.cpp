@@ -105,4 +105,17 @@ LocalNBNNClassifier* local_nbnn_classifier_factory(std::map<std::string, msgpack
     // TODO: Check bounds/params
     return new LocalNBNNClassifier(&features[0], &indeces[0], features.size() / feature_size, feature_size, labels, max_results);
 }
+
+FaceImageObjectDetector* face_image_object_detector_factory(std::map<std::string, msgpack::object> *kw) {
+    double scale_factor;
+    int min_size, max_size, min_neighbors;
+    kw->at(std::string("scale_factor")) >> scale_factor;
+    kw->at(std::string("min_neighbors")) >> min_neighbors;
+    kw->at(std::string("min_size")) >> min_size;
+    kw->at(std::string("max_size")) >> max_size;
+
+    // TODO: Check bounds/params
+    return new FaceImageObjectDetector(scale_factor, min_neighbors, min_size, max_size);
+}
+
 } // namespace Picarus
