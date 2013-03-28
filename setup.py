@@ -42,7 +42,7 @@ ext_modules = [Extension("_picarus_takeout",
                          language="c++",
                          include_dirs=['picarus_takeout'],
                          extra_compile_args=['-I', np.get_include(), '-O3', '-Wall', '-mmmx', '-msse', '-msse2', '-DUSE_BLAS'],
-                         libraries=['opencv_highgui', 'opencv_core', 'opencv_imgproc', 'blas', 'msgpack', 'fftw3f'])]
+                         libraries=['opencv_highgui', 'opencv_core', 'opencv_imgproc', 'opencv_objdetect', 'blas', 'msgpack', 'fftw3f'])]
 
 setup(name='picarus_takeout',
       cmdclass=cmdclass,
