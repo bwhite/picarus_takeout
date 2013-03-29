@@ -19,10 +19,10 @@ double* FaceImageObjectDetector::compute_detections(unsigned char *image, int he
     cascade->detectMultiScale(image_mat_gray, faces, scale_factor, min_neighbors, 0, cv::Size(min_size, min_size), cv::Size(max_size, max_size));
     double *detections_out = new double[faces.size() * 4];
     for (int i = 0; i < faces.size(); ++i) {
-        detections_out[i * 4] = faces[i].y;
-        detections_out[i * 4 + 1] = faces[i].y + faces[i].height;
-        detections_out[i * 4 + 2] = faces[i].x;
-        detections_out[i * 4 + 3] = faces[i].x + faces[i].width;
+        detections_out[i * 4] = faces[i].y / (double)height;
+        detections_out[i * 4 + 1] = (faces[i].y + faces[i].height) / (double)height;
+        detections_out[i * 4 + 2] = faces[i].x / (double)width;
+        detections_out[i * 4 + 3] = (faces[i].x + faces[i].width) / (double)width;
     }
     delete [] image_gray_data;
     *out_num_detections = faces.size();
