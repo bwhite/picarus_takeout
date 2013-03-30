@@ -78,6 +78,13 @@ LinearClassifier* linear_classifier_factory(std::map<std::string, msgpack::objec
     return new LinearClassifier(&coefficients[0], coefficients.size(), intercept);
 }
 
+BinaryPredictor* binary_predictor_factory(std::map<std::string, msgpack::object> *kw) {
+    double threshold;
+    kw->at(std::string("threshold")) >> threshold;
+
+    // TODO: Check bounds/params
+    return new BinaryPredictor(threshold);
+}
 
 BlocksImageMultiFeature* blocks_image_multi_feature_factory(std::map<std::string, msgpack::object> *kw) {
     int block_size, levels;

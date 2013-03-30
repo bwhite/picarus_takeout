@@ -30,6 +30,8 @@ ModelChain::ModelChain(const char *msgpack_binary, int size) {
             this->models.push_back(hog_image_mask_feature_factory(&kw));
         else if (!name.compare("picarus.LinearClassifier"))
             this->models.push_back(linear_classifier_factory(&kw));
+        else if (!name.compare("picarus.BinaryPredictor"))
+            this->models.push_back(binary_predictor_factory(&kw));
         else if (!name.compare("picarus.BlocksImageMultiFeature"))
             this->models.push_back(blocks_image_multi_feature_factory(&kw));
         else if (!name.compare("picarus.LocalNBNNClassifier"))

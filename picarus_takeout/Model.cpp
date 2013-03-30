@@ -85,6 +85,21 @@ void double_tostring(double val, BinaryCollector *collector) {
     (*collector)((const unsigned char *)sbuf.data(), sbuf.size());
 }
 
+void bool_fromstring(const unsigned char *input, int size, bool *val) {
+    // TODO: Look at optimizing this
+    msgpack::unpacked msg;
+    msgpack::sbuffer sbuf;
+    sbuf.write((const char *)input, size);
+    msgpack::unpack(&msg, sbuf.data(), sbuf.size());
+    msg.get().convert(val);
+}
+
+void bool_tostring(bool val, BinaryCollector *collector) {
+    msgpack::sbuffer sbuf;
+    msgpack::pack(sbuf, val);
+    (*collector)((const unsigned char *)sbuf.data(), sbuf.size());
+}
+
 unsigned char *image_bgr_fromstring(const unsigned char *binary_image, int size, int *height_out, int *width_out) {
     cv::Mat binary_image_mat(1, size, CV_8UC1, (unsigned char *)binary_image);
     cv::Mat image = cv::imdecode(binary_image_mat, CV_LOAD_IMAGE_COLOR);

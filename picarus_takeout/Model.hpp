@@ -19,6 +19,8 @@ void ndarray_fromstring(const unsigned char *input, int size, std::vector<double
 void ndarray_tostring(const std::vector<double> &vec, const std::vector<int> &shape, BinaryCollector *collector);
 void double_fromstring(const unsigned char *input, int size, double *val);
 void double_tostring(double val, BinaryCollector *collector);
+void bool_fromstring(const unsigned char *input, int size, bool *val);
+void bool_tostring(bool val, BinaryCollector *collector);
 void double_strings_fromstring(const unsigned char *input, int size, std::vector<std::pair<double, std::string> > *val);
 void double_strings_tostring(const std::vector<std::pair<double, std::string> > &double_strings,  BinaryCollector *collector);
 void image_detections_tostring(const std::string &image_str, const std::vector<double> &vec, const std::vector<int> &shape, BinaryCollector *collector);
