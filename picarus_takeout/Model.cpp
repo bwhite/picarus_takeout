@@ -71,28 +71,6 @@ void ndarray_fromstring(const unsigned char *input, int size, std::vector<double
     *shape = rvec1.get();
 }
 
-
-void indeces_dists_tostring(const std::vector<int> &indeces, const std::vector<double> &dists, BinaryCollector *collector) {
-    msgpack::type::tuple<std::vector<int>, std::vector<double> > tuple(indeces, dists);
-    msgpack::sbuffer sbuf;
-    msgpack::pack(sbuf, tuple);
-    (*collector)((const unsigned char *)sbuf.data(), sbuf.size());
-}
-
-void indeces_dists_fromstring(const unsigned char *input, int size, std::vector<int> *indeces, std::vector<double> *dists) {
-    // TODO: Look at optimizing this
-    msgpack::unpacked msg;
-    msgpack::sbuffer sbuf;
-    sbuf.write((const char *)input, size);
-    msgpack::unpack(&msg, sbuf.data(), sbuf.size());
-    msgpack::type::tuple<std::vector<int>, std::vector<double> > rvec(msg.get());
-    msgpack::type::tuple_element<msgpack::type::tuple<std::vector<int>, std::vector<double> >, 0> rvec0(rvec);
-    *indeces = rvec0.get();
-    msgpack::type::tuple_element<msgpack::type::tuple<std::vector<int>, std::vector<double> >, 1> rvec1(rvec);
-    *dists = rvec1.get();
-}
-
-
 void double_fromstring(const unsigned char *input, int size, double *val) {
     // TODO: Look at optimizing this
     msgpack::unpacked msg;

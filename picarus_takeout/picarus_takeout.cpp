@@ -124,15 +124,17 @@ SphericalHasher* spherical_hasher_factory(std::map<std::string, msgpack::object>
 }
 
 SphericalHashIndex* spherical_hash_index_factory(std::map<std::string, msgpack::object> *kw) {
-    int num_hashes;
-    int num_results;
+    int max_results;
     std::string hashes;
+    std::vector<int> indeces;
+    std::vector<std::string> labels;
     kw->at(std::string("hashes")) >> hashes;
-    kw->at(std::string("num_hashes")) >> num_hashes;
-    kw->at(std::string("num_results")) >> num_results;
+    kw->at(std::string("indeces")) >> indeces;
+    kw->at(std::string("labels")) >> labels;
+    kw->at(std::string("max_results")) >> max_results;
 
     // TODO: Check bounds/params
-    return new SphericalHashIndex((const unsigned char *)hashes.c_str(), num_hashes, hashes.size() / num_hashes, num_results);
+    return new SphericalHashIndex((const unsigned char *)hashes.c_str(), &indeces[0], indeces.size(), hashes.size() / indeces.size(), labels, max_results);
 }
 
 FaceImageObjectDetector* face_image_object_detector_factory(std::map<std::string, msgpack::object> *kw) {

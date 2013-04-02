@@ -5,7 +5,6 @@
 #include "knearest_neighbor.h"
 #include <cstring>
 #include <stdexcept>
-#include <iostream>
 
 namespace Picarus {
 LocalNBNNClassifier::LocalNBNNClassifier(double *features, int *indeces, int num_features, int feature_size, const std::vector<std::string> &labels, int max_results) :  num_features(num_features), feature_size(feature_size), labels(labels), max_results(max_results) {
@@ -83,8 +82,6 @@ void LocalNBNNClassifier::process_binary(const unsigned char *input, int size, B
         (*collector)(NULL, 0);
         return;
     }
-    for (int i = 0; i < class_dists->size(); ++i)
-        std::cout << i << " " << (*class_dists)[i].first << " " << (*class_dists)[i].second << std::endl;
     double_strings_tostring(*class_dists, collector);
     delete class_dists;
 }
