@@ -26,6 +26,7 @@ unsigned char *SphericalHasher::hash_feature(double *feature, int size, int *siz
         if (distSqr <= threshs[i])
             hash[i / 8] |= 1 << (i % 8);
     }
+    *size_out = num_bytes;
     return hash;
 }
 } // namespace Picarus
