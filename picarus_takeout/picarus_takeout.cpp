@@ -113,6 +113,16 @@ LocalNBNNClassifier* local_nbnn_classifier_factory(std::map<std::string, msgpack
     return new LocalNBNNClassifier(&features[0], &indeces[0], features.size() / feature_size, feature_size, labels, max_results);
 }
 
+SphericalHasher* spherical_hasher_factory(std::map<std::string, msgpack::object> *kw) {
+    std::vector<double> pivots;
+    std::vector<double> threshs;
+    kw->at(std::string("pivots")) >> pivots;
+    kw->at(std::string("threshs")) >> threshs;
+
+    // TODO: Check bounds/params
+    return new SphericalHasher(&pivots[0], &threshs[0], threshs.size(), pivots.size() / threshs.size());
+}
+
 FaceImageObjectDetector* face_image_object_detector_factory(std::map<std::string, msgpack::object> *kw) {
     double scale_factor;
     int min_size, max_size, min_neighbors;

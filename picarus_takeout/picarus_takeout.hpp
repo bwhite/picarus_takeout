@@ -11,6 +11,7 @@
 #include "LocalNBNNClassifier.hpp"
 #include "FaceImageObjectDetector.hpp"
 #include "BinaryPredictor.hpp"
+#include "SphericalHasher.hpp"
 #include <string>
 #include <vector>
 #include <map>
@@ -27,6 +28,7 @@ HOGImageMaskFeature* hog_image_mask_feature_factory(std::map<std::string, msgpac
 BOVWImageFeature* bovw_image_feature_factory(std::map<std::string, msgpack::object> *kw);
 FaceImageObjectDetector* face_image_object_detector_factory(std::map<std::string, msgpack::object> *kw);
 BinaryPredictor* binary_predictor_factory(std::map<std::string, msgpack::object> *kw);
+SphericalHasher* spherical_hasher_factory(std::map<std::string, msgpack::object> *kw);
 void delete_array(void *array);
 } // namespace Picarus
 
