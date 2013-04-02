@@ -35,7 +35,7 @@ except ImportError:
 
 #  '-ftree-vectorizer-verbose=2'
 #, '-lblas' '-lopencv_highgui', '-lopencv_core','-lopencv_imgproc'
-SOURCES = 'LocalNBNNClassifier.cpp knearest_neighbor.c opencv_helpers.cpp PixelsImageFeature.cpp ImageMaskFeature.cpp ImageMultiFeature.cpp BinaryCollector.cpp BlocksImageMultiFeature.cpp picarus_takeout.cpp HOGImageMaskFeature.cpp features.cc ModelChain.cpp Model.cpp picarus_takeout_main.cpp ImagePreprocessor.cpp BOVWImageFeature.cpp HistogramImageFeature.cpp ImageFeature.cpp BinaryPredictor.cpp picarus_math.c LinearClassifier.cpp pyramid_histogram_aux.c bovw_aux.c GISTImageFeature.cpp gist/gist.c gist/gist_wrapper.c gist/standalone_image.c FaceImageObjectDetector.cpp ImageObjectDetector.cpp'
+SOURCES = 'LocalNBNNClassifier.cpp knearest_neighbor.c opencv_helpers.cpp PixelsImageFeature.cpp ImageMaskFeature.cpp ImageMultiFeature.cpp BinaryCollector.cpp BlocksImageMultiFeature.cpp picarus_takeout.cpp HOGImageMaskFeature.cpp features.cc ModelChain.cpp Model.cpp picarus_takeout_main.cpp ImagePreprocessor.cpp BOVWImageFeature.cpp HistogramImageFeature.cpp ImageFeature.cpp BinaryPredictor.cpp picarus_math.c LinearClassifier.cpp pyramid_histogram_aux.c bovw_aux.c GISTImageFeature.cpp gist/gist.c gist/gist_wrapper.c gist/standalone_image.c FaceImageObjectDetector.cpp ImageObjectDetector.cpp Hasher.cpp SphericalHasher.cpp'
 SOURCES = ['picarus_takeout/' + x for x in SOURCES.split()]
 ext_modules = [Extension("_picarus_takeout",
                          ["picarus_takeout/wrap.pyx"] + SOURCES,
