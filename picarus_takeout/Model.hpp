@@ -26,6 +26,8 @@ void double_strings_tostring(const std::vector<std::pair<double, std::string> > 
 void image_detections_tostring(const std::string &image_str, const std::vector<double> &vec, const std::vector<int> &shape, BinaryCollector *collector);
 void image_detections_fromstring(const unsigned char *input, int size, std::string *image_str, std::vector<double> *vec, std::vector<int> *shape);
 unsigned char *image_bgr_fromstring(const unsigned char *binary_image, int size, int *height_out, int *width_out);
+void indeces_dists_tostring(const std::vector<int> &indeces, const std::vector<double> &dists, BinaryCollector *collector);
+void indeces_dists_fromstring(const unsigned char *input, int size, std::vector<int> *indeces, std::vector<double> *dists);
 } // namespace Picarus
 
 #endif

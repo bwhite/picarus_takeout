@@ -3,7 +3,7 @@
 #include <cstring>
 
 namespace Picarus {
-SphericalHasher::SphericalHasher(double *pivots, double *threshs, int num_pivots, int num_dims) : num_pivots(num_pivots), num_dims(num_dims), num_bytes(ceil(num_dims / 8.)) {
+SphericalHasher::SphericalHasher(double *pivots, double *threshs, int num_pivots, int num_dims) : num_pivots(num_pivots), num_dims(num_dims), num_bytes(ceil(num_pivots / 8.)) {
     this->pivots = new double[num_pivots * num_dims];
     this->threshs = new double[num_pivots];
     this->hash = new unsigned char[num_bytes];

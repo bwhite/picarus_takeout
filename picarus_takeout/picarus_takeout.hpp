@@ -12,6 +12,7 @@
 #include "FaceImageObjectDetector.hpp"
 #include "BinaryPredictor.hpp"
 #include "SphericalHasher.hpp"
+#include "SphericalHashIndex.hpp"
 #include <string>
 #include <vector>
 #include <map>
@@ -29,6 +30,7 @@ BOVWImageFeature* bovw_image_feature_factory(std::map<std::string, msgpack::obje
 FaceImageObjectDetector* face_image_object_detector_factory(std::map<std::string, msgpack::object> *kw);
 BinaryPredictor* binary_predictor_factory(std::map<std::string, msgpack::object> *kw);
 SphericalHasher* spherical_hasher_factory(std::map<std::string, msgpack::object> *kw);
+SphericalHashIndex* spherical_hash_index_factory(std::map<std::string, msgpack::object> *kw);
 void delete_array(void *array);
 } // namespace Picarus
 

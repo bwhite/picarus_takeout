@@ -123,6 +123,18 @@ SphericalHasher* spherical_hasher_factory(std::map<std::string, msgpack::object>
     return new SphericalHasher(&pivots[0], &threshs[0], threshs.size(), pivots.size() / threshs.size());
 }
 
+SphericalHashIndex* spherical_hash_index_factory(std::map<std::string, msgpack::object> *kw) {
+    int num_hashes;
+    int num_results;
+    std::string hashes;
+    kw->at(std::string("hashes")) >> hashes;
+    kw->at(std::string("num_hashes")) >> num_hashes;
+    kw->at(std::string("num_results")) >> num_results;
+
+    // TODO: Check bounds/params
+    return new SphericalHashIndex((const unsigned char *)hashes.c_str(), num_hashes, hashes.size() / num_hashes, num_results);
+}
+
 FaceImageObjectDetector* face_image_object_detector_factory(std::map<std::string, msgpack::object> *kw) {
     double scale_factor;
     int min_size, max_size, min_neighbors;
