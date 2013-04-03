@@ -14,12 +14,17 @@ ImagePreprocessor::ImagePreprocessor(std::string method, int size, std::string c
         this->method_code = 255; // "original"  Don't change the size
     }
 
-    // Only JPG is supported at this point and it is the default (use "jpg" for forward compatibility)
-    this->compression_extension = std::string(".jpg");
-    std::vector<int> params(2);
-    params[0] = CV_IMWRITE_JPEG_QUALITY;
-    params[1] = 100;
-    this->compression_params = params;
+    if (compression.compare("png") == 0) {
+        this->compression_extension = std::string(".png");
+        std::vector<int> params;
+        this->compression_params = params;
+    } else {
+        this->compression_extension = std::string(".jpg");
+        std::vector<int> params(2);
+        params[0] = CV_IMWRITE_JPEG_QUALITY;
+        params[1] = 100;
+        this->compression_params = params;
+    }
 }
 
 
