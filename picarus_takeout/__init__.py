@@ -1,1 +1,1 @@
-from _picarus_takeout import ModelChain
+from _picarus_takeout import ModelChain, spherical_hasher_train
