@@ -37,4 +37,4 @@ def spherical_hasher_train(points, num_pivots, eps_m, eps_s, max_iters):
     cdef np.ndarray threshs = np.zeros(num_pivots)
     classes.spherical_hasher_train(<np.double_t *>points_array.data, <np.double_t *>pivots.data, <np.double_t *>threshs.data,
                                    points_array.shape[0], points_array.shape[1], num_pivots, eps_m, eps_s, max_iters)
-    return pivots, threshs
+    return {'pivots': pivots, 'threshs': threshs}
