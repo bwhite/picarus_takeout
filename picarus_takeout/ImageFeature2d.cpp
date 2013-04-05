@@ -30,5 +30,6 @@ void ImageFeature2d::process_binary(const unsigned char *input, int size, Binary
     shape[1] = descriptors.cols;
     std::string descriptors_vec(descriptors.data, descriptors.data + descriptors.rows * descriptors.cols);
     binary_feature2d_tostring(descriptors_vec, keypoints_vec, shape, collector);
+    delete [] image;
 }
 } // namespace Picarus
