@@ -19,8 +19,8 @@ void ImageFeature2d::process_binary(const unsigned char *input, int size, Binary
 
     std::vector<double> keypoints_vec(keypoints.size() * 5);
     for (int i = 0; i < keypoints.size(); ++i) {
-        keypoints_vec[i * 5] = keypoints[i].pt.y;
-        keypoints_vec[i * 5 + 1] = keypoints[i].pt.x;
+        keypoints_vec[i * 5] = keypoints[i].pt.y / height;
+        keypoints_vec[i * 5 + 1] = keypoints[i].pt.x / width;
         keypoints_vec[i * 5 + 2] = keypoints[i].angle;
         keypoints_vec[i * 5 + 3] = keypoints[i].response;
         keypoints_vec[i * 5 + 4] = keypoints[i].octave;
