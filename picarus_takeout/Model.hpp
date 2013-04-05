@@ -28,6 +28,8 @@ void image_detections_fromstring(const unsigned char *input, int size, std::stri
 unsigned char *image_bgr_fromstring(const unsigned char *binary_image, int size, int *height_out, int *width_out);
 void labels_dists_tostring(const std::vector<std::string> &labels, const std::vector<double> &dists, BinaryCollector *collector);
 void labels_dists_fromstring(const unsigned char *input, int size, std::vector<std::string> *labels, std::vector<double> *dists);
+void binary_feature2d_tostring(const std::string &features, const std::vector<double> &keypoints, const std::vector<int> &shape, BinaryCollector *collector);
+void binary_feature2d_fromstring(const unsigned char *input, int size, std::string *features, std::vector<double> *vec, std::vector<int> *shape);
 } // namespace Picarus
 
 #endif

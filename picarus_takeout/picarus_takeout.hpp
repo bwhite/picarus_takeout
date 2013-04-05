@@ -13,6 +13,7 @@
 #include "BinaryPredictor.hpp"
 #include "SphericalHasher.hpp"
 #include "SphericalHashIndex.hpp"
+#include "BRISKImageFeature2d.hpp"
 #include <string>
 #include <vector>
 #include <map>
@@ -31,6 +32,7 @@ FaceImageObjectDetector* face_image_object_detector_factory(std::map<std::string
 BinaryPredictor* binary_predictor_factory(std::map<std::string, msgpack::object> *kw);
 SphericalHasher* spherical_hasher_factory(std::map<std::string, msgpack::object> *kw);
 SphericalHashIndex* spherical_hash_index_factory(std::map<std::string, msgpack::object> *kw);
+BRISKImageFeature2d* brisk_image_feature2d_factory(std::map<std::string, msgpack::object> *kw);
 void delete_array(void *array);
 } // namespace Picarus
 

@@ -35,14 +35,14 @@ except ImportError:
 
 #  '-ftree-vectorizer-verbose=2'
 #, '-lblas' '-lopencv_highgui', '-lopencv_core','-lopencv_imgproc'
-SOURCES = 'LocalNBNNClassifier.cpp knearest_neighbor.c opencv_helpers.cpp PixelsImageFeature.cpp ImageMaskFeature.cpp ImageMultiFeature.cpp BinaryCollector.cpp BlocksImageMultiFeature.cpp picarus_takeout.cpp HOGImageMaskFeature.cpp features.cc ModelChain.cpp Model.cpp picarus_takeout_main.cpp ImagePreprocessor.cpp BOVWImageFeature.cpp HistogramImageFeature.cpp ImageFeature.cpp BinaryPredictor.cpp picarus_math.c LinearClassifier.cpp pyramid_histogram_aux.c bovw_aux.c GISTImageFeature.cpp gist/gist.c gist/gist_wrapper.c gist/standalone_image.c hamming_aux.c spherical_hasher_train.c HashIndex.cpp SphericalHashIndex.cpp FaceImageObjectDetector.cpp ImageObjectDetector.cpp Hasher.cpp SphericalHasher.cpp'
+SOURCES = 'LocalNBNNClassifier.cpp knearest_neighbor.c opencv_helpers.cpp PixelsImageFeature.cpp ImageMaskFeature.cpp ImageMultiFeature.cpp BinaryCollector.cpp BlocksImageMultiFeature.cpp picarus_takeout.cpp HOGImageMaskFeature.cpp features.cc ModelChain.cpp Model.cpp picarus_takeout_main.cpp ImagePreprocessor.cpp BOVWImageFeature.cpp HistogramImageFeature.cpp ImageFeature.cpp BinaryPredictor.cpp picarus_math.c LinearClassifier.cpp pyramid_histogram_aux.c bovw_aux.c GISTImageFeature.cpp gist/gist.c gist/gist_wrapper.c gist/standalone_image.c hamming_aux.c spherical_hasher_train.c HashIndex.cpp SphericalHashIndex.cpp FaceImageObjectDetector.cpp ImageObjectDetector.cpp Hasher.cpp SphericalHasher.cpp BRISKImageFeature2d.cpp ImageFeature2d.cpp'
 SOURCES = ['picarus_takeout/' + x for x in SOURCES.split()]
 ext_modules = [Extension("_picarus_takeout",
                          ["picarus_takeout/wrap.pyx"] + SOURCES,
                          language="c++",
                          include_dirs=['picarus_takeout'],
                          extra_compile_args=['-I', np.get_include(), '-O3', '-Wall', '-mmmx', '-msse', '-msse2', '-DUSE_BLAS'],
-                         libraries=['opencv_highgui', 'opencv_core', 'opencv_imgproc', 'opencv_objdetect', 'blas', 'msgpack', 'fftw3f'])]
+                         libraries=['opencv_highgui', 'opencv_core', 'opencv_imgproc', 'opencv_objdetect', 'opencv_features2d', 'blas', 'msgpack', 'fftw3f'])]
 
 setup(name='picarus_takeout',
       cmdclass=cmdclass,

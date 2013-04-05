@@ -68,6 +68,17 @@ BOVWImageFeature* bovw_image_feature_factory(std::map<std::string, msgpack::obje
     return new BOVWImageFeature(&clusters[0], num_clusters, clusters.size() / num_clusters, levels);
 }
 
+BRISKImageFeature2d* brisk_image_feature2d_factory(std::map<std::string, msgpack::object> *kw) {
+    int thresh, octaves;
+    double pattern_scale;
+    
+    kw->at(std::string("thresh")) >> thresh;
+    kw->at(std::string("octaves")) >> octaves;
+    kw->at(std::string("pattern_scale")) >> pattern_scale;
+    // TODO: Check bounds/params
+    return new BRISKImageFeature2d(thresh, octaves, pattern_scale);
+}
+
 LinearClassifier* linear_classifier_factory(std::map<std::string, msgpack::object> *kw) {
     std::vector<double> coefficients;
     double intercept;

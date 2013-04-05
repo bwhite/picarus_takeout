@@ -36,6 +36,29 @@ void ndarray_tostring(const std::vector<double> &vec, const std::vector<int> &sh
     (*collector)((const unsigned char *)sbuf.data(), sbuf.size());
 }
 
+void binary_feature2d_tostring(const std::string &features, const std::vector<double> &keypoints, const std::vector<int> &shape, BinaryCollector *collector) {
+    msgpack::type::tuple<std::string, std::vector<double>, std::vector<int> > tuple(features, keypoints, shape);
+    msgpack::sbuffer sbuf;
+    msgpack::pack(sbuf, tuple);
+    (*collector)((const unsigned char *)sbuf.data(), sbuf.size());
+}
+
+void binary_feature2d_fromstring(const unsigned char *input, int size, std::string *features, std::vector<double> *vec, std::vector<int> *shape) {
+    // TODO: Look at optimizing this
+    msgpack::unpacked msg;
+    msgpack::sbuffer sbuf;
+    sbuf.write((const char *)input, size);
+    msgpack::unpack(&msg, sbuf.data(), sbuf.size());
+    msgpack::type::tuple<std::string, std::vector<double>, std::vector<int> > rvec(msg.get());
+    msgpack::type::tuple_element<msgpack::type::tuple<std::string, std::vector<double>, std::vector<int> >, 0> rvec0(rvec);
+    *features = rvec0.get();
+    msgpack::type::tuple_element<msgpack::type::tuple<std::string, std::vector<double>, std::vector<int> >, 1> rvec1(rvec);
+    *vec = rvec1.get();
+    msgpack::type::tuple_element<msgpack::type::tuple<std::string, std::vector<double>, std::vector<int> >, 2> rvec2(rvec);
+    *shape = rvec2.get();
+}
+
+
 
 void image_detections_tostring(const std::string &image_str, const std::vector<double> &vec, const std::vector<int> &shape, BinaryCollector *collector) {
     msgpack::type::tuple<std::string, std::vector<double>, std::vector<int> > tuple(image_str, vec, shape);
