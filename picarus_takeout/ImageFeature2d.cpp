@@ -17,13 +17,14 @@ void ImageFeature2d::process_binary(const unsigned char *input, int size, Binary
     cv::Mat descriptors;
     compute_feature2d(image, height, width, &descriptors, &keypoints);
 
-    std::vector<double> keypoints_vec(keypoints.size() * 5);
+    std::vector<double> keypoints_vec(keypoints.size() * 6);
     for (int i = 0; i < keypoints.size(); ++i) {
-        keypoints_vec[i * 5] = keypoints[i].pt.y / height;
-        keypoints_vec[i * 5 + 1] = keypoints[i].pt.x / width;
-        keypoints_vec[i * 5 + 2] = keypoints[i].angle;
-        keypoints_vec[i * 5 + 3] = keypoints[i].response;
-        keypoints_vec[i * 5 + 4] = keypoints[i].octave;
+        keypoints_vec[i * 6] = keypoints[i].pt.y / height;
+        keypoints_vec[i * 6 + 1] = keypoints[i].pt.x / width;
+        keypoints_vec[i * 6 + 2] = keypoints[i].angle;
+        keypoints_vec[i * 6 + 3] = keypoints[i].response;
+        keypoints_vec[i * 6 + 4] = keypoints[i].octave;
+        keypoints_vec[i * 6 + 5] = keypoints[i].size;
     }
     std::vector<int> shape(2);
     shape[0] = descriptors.rows;

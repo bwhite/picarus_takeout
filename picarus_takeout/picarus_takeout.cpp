@@ -148,18 +148,23 @@ SphericalHashIndex* spherical_hash_index_factory(std::map<std::string, msgpack::
     return new SphericalHashIndex((const unsigned char *)hashes.c_str(), &indeces[0], indeces.size(), hashes.size() / indeces.size(), labels, max_results);
 }
 
-HammingHashIndex* hamming_hash_index_factory(std::map<std::string, msgpack::object> *kw) {
-    int max_results;
+HammingFeature2dHashIndex* hamming_feature2d_hash_index_factory(std::map<std::string, msgpack::object> *kw) {
+    int max_results, max_keypoint_results, hamming_thresh;
     std::string hashes;
     std::vector<int> indeces;
+    //std::vector<double> keypoints;
     std::vector<std::string> labels;
     kw->at(std::string("hashes")) >> hashes;
     kw->at(std::string("indeces")) >> indeces;
+    //kw->at(std::string("keypoints")) >> keypoints;
     kw->at(std::string("labels")) >> labels;
     kw->at(std::string("max_results")) >> max_results;
-
+    kw->at(std::string("max_keypoint_results")) >> max_keypoint_results;
+    kw->at(std::string("hamming_thresh")) >> hamming_thresh;
     // TODO: Check bounds/params
-    return new HammingHashIndex((const unsigned char *)hashes.c_str(), &indeces[0], indeces.size(), hashes.size() / indeces.size(), labels, max_results);
+    //&keypoints[0], 
+    return new HammingFeature2dHashIndex((const unsigned char *)hashes.c_str(), &indeces[0], indeces.size(), hashes.size() / indeces.size(), labels,
+                                         max_results, max_keypoint_results, hamming_thresh);
 }
 
 FaceImageObjectDetector* face_image_object_detector_factory(std::map<std::string, msgpack::object> *kw) {
