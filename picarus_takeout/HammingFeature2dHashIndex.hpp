@@ -3,6 +3,7 @@
 #include "Model.hpp"
 #include <string>
 #include <vector>
+#include "HammingMultiIndex.hpp"
 
 namespace Picarus {
 class HammingFeature2dHashIndex : public Model {
@@ -21,6 +22,7 @@ private:
     double *idf;
     int *temp_hamming;
     int *temp_bitand;
+    HammingMultiIndex *index;
 public:
     HammingFeature2dHashIndex(const unsigned char *hashes, int *indeces, int num_hashes, int num_bytes,
                               const std::vector<std::string> &labels, int max_results, int max_keypoint_results, int hamming_thresh);

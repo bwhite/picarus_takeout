@@ -7,6 +7,7 @@ class HammingMultiIndex {
 private:
     const int num_hashes;
     const int num_bytes;
+    const int num_bits;
     const int max_results;
     uint32_t ***index;
     uint8_t *db;
