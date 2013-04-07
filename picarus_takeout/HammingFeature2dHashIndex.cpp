@@ -13,7 +13,7 @@ HammingFeature2dHashIndex::HammingFeature2dHashIndex(const unsigned char *hashes
                                                      const std::vector<std::string> &labels, int max_results, int max_keypoint_results, int hamming_thresh) : num_hashes(num_hashes), num_bytes(num_bytes), labels(labels), max_results(max_results), max_keypoint_results(max_keypoint_results), hamming_thresh(hamming_thresh) {
     printf("num_hashes[%d] num_bytes[%d] max_results[%d] num_labels[%d] max_keypoint_results[%d] hamming_thresh[%d]\n", num_hashes, num_bytes, max_results, labels.size(), max_keypoint_results, hamming_thresh);
     // TODO: Add back in linear hamming distance code
-    //this->index = new HammingMultiIndex(hashes, num_hashes, num_bytes, max_keypoint_results);
+    this->index = new HammingMultiIndex(hashes, num_hashes, num_bytes, max_keypoint_results);
     this->hashes = new unsigned char[num_hashes * num_bytes];
     memcpy(this->hashes, hashes, num_hashes * num_bytes);
     this->indeces = new int[num_hashes];
@@ -31,6 +31,8 @@ HammingFeature2dHashIndex::HammingFeature2dHashIndex(const unsigned char *hashes
 }
 
 HammingFeature2dHashIndex::~HammingFeature2dHashIndex() {
+    delete index;
+
     delete [] hashes;
     delete [] indeces;
     delete [] idf;
@@ -47,6 +49,7 @@ std::vector<std::pair<double, std::string> > *HammingFeature2dHashIndex::query_i
         return NULL;
     }
     std::map<int, double> dists;
+    /*
     for (i = 0; i < num_hashes; ++i) {
         max_valid_ind = -1;
         place_dist_clear_arrays(result_indeces, result_dists, max_keypoint_results);
@@ -65,10 +68,9 @@ std::vector<std::pair<double, std::string> > *HammingFeature2dHashIndex::query_i
             } catch (const std::out_of_range& oor) {
                 prev_dist_val = 0.;
             }
-            dists[indeces[result_indeces[j]]] = prev_dist_val - idf[indeces[result_indeces[j]]];  /* TODO(brandyn): Incorporate TF-IDF if num_bytes is small enough to store densely */
+            dists[indeces[result_indeces[j]]] = prev_dist_val - idf[indeces[result_indeces[j]]];  // TODO(brandyn): Incorporate TF-IDF if num_bytes is small enough to store densely
         }
-    }
-    /*
+    }*/
     for (i = 0; i < num_hashes; ++i) {
         int num_results = 0;
         int *results = index->query_index(hashes + num_bytes * i, num_bytes, &num_results);
@@ -85,7 +87,7 @@ std::vector<std::pair<double, std::string> > *HammingFeature2dHashIndex::query_i
             dists[indeces[results[j * 2 + 1]]] = prev_dist_val - idf[indeces[results[j * 2 + 1]]];  // TODO(brandyn): Incorporate TF-IDF if num_bytes is small enough to store densely
         }
         delete [] results;
-    }*/
+    }
     std::vector<std::pair<double, std::string> > *dists_out  = new std::vector<std::pair<double, std::string> >();
     const int num_results = dists.size() > max_results ? max_results : dists.size();
     dists_out->reserve(dists.size());
