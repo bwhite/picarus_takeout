@@ -13,7 +13,9 @@ HammingFeature2dHashIndex::HammingFeature2dHashIndex(const unsigned char *hashes
                                                      const std::vector<std::string> &labels, int max_results, int max_keypoint_results, int hamming_thresh) : num_hashes(num_hashes), num_bytes(num_bytes), labels(labels), max_results(max_results), max_keypoint_results(max_keypoint_results), hamming_thresh(hamming_thresh) {
     printf("num_hashes[%d] num_bytes[%d] max_results[%d] num_labels[%d] max_keypoint_results[%d] hamming_thresh[%d]\n", num_hashes, num_bytes, max_results, labels.size(), max_keypoint_results, hamming_thresh);
     // TODO: Add back in linear hamming distance code
-    this->index = new HammingMultiIndex(hashes, num_hashes, num_bytes, max_keypoint_results);
+    //this->index = new HammingMultiIndex(hashes, num_hashes, num_bytes, max_keypoint_results);
+    this->hashes = new unsigned char[num_hashes * num_bytes];
+    memcpy(this->hashes, hashes, num_hashes * num_bytes);
     this->indeces = new int[num_hashes];
     this->result_indeces = new int[max_keypoint_results];
     this->result_dists = new double[max_keypoint_results];
@@ -29,6 +31,7 @@ HammingFeature2dHashIndex::HammingFeature2dHashIndex(const unsigned char *hashes
 }
 
 HammingFeature2dHashIndex::~HammingFeature2dHashIndex() {
+    delete [] hashes;
     delete [] indeces;
     delete [] idf;
     delete [] result_indeces;
