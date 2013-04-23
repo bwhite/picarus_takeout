@@ -18,6 +18,10 @@ ImagePreprocessor::ImagePreprocessor(std::string method, int size, std::string c
         this->compression_extension = std::string(".png");
         std::vector<int> params;
         this->compression_params = params;
+    } else if (compression.compare("ppm") == 0) {
+        this->compression_extension = std::string(".ppm");
+        std::vector<int> params;
+        this->compression_params = params;
     } else {
         this->compression_extension = std::string(".jpg");
         std::vector<int> params(2);
