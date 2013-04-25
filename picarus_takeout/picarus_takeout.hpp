@@ -7,6 +7,7 @@
 #include "BOVWImageFeature.hpp"
 #include "HOGImageMaskFeature.hpp"
 #include "LinearClassifier.hpp"
+#include "KernelClassifier.hpp"
 #include "BlocksImageMultiFeature.hpp"
 #include "LocalNBNNClassifier.hpp"
 #include "FaceImageObjectDetector.hpp"
@@ -25,6 +26,7 @@ PixelsImageFeature* pixels_image_feature_factory(std::map<std::string, msgpack::
 HistogramImageFeature* histogram_image_feature_factory(std::map<std::string, msgpack::object> *kw);
 GISTImageFeature* gist_image_feature_factory(std::map<std::string, msgpack::object> *kw);
 LinearClassifier* linear_classifier_factory(std::map<std::string, msgpack::object> *kw);
+KernelClassifier* kernel_classifier_factory(std::map<std::string, msgpack::object> *kw);
 LocalNBNNClassifier* local_nbnn_classifier_factory(std::map<std::string, msgpack::object> *kw);
 BlocksImageMultiFeature* blocks_image_multi_feature_factory(std::map<std::string, msgpack::object> *kw);
 HOGImageMaskFeature* hog_image_mask_feature_factory(std::map<std::string, msgpack::object> *kw);

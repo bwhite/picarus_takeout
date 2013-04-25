@@ -30,6 +30,8 @@ ModelChain::ModelChain(const char *msgpack_binary, int size) {
             this->models.push_back(hog_image_mask_feature_factory(&kw));
         else if (!name.compare("picarus.LinearClassifier"))
             this->models.push_back(linear_classifier_factory(&kw));
+        else if (!name.compare("picarus.KernelClassifier"))
+            this->models.push_back(kernel_classifier_factory(&kw));
         else if (!name.compare("picarus.BRISKImageFeature2d"))
             this->models.push_back(brisk_image_feature2d_factory(&kw));
         else if (!name.compare("picarus.BinaryPredictor"))
