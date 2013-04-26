@@ -90,16 +90,16 @@ LinearClassifier* linear_classifier_factory(std::map<std::string, msgpack::objec
 }
 
 KernelClassifier* kernel_classifier_factory(std::map<std::string, msgpack::object> *kw) {
-    std::vector<double> support_vectors, dual_coeff;
+    std::vector<double> support_vectors, dual_coef;
     double intercept;
     std::string kernel;
     kw->at(std::string("support_vectors")) >> support_vectors;
-    kw->at(std::string("dual_coeff")) >> dual_coeff;
+    kw->at(std::string("dual_coef")) >> dual_coef;
     kw->at(std::string("intercept")) >> intercept;
     kw->at(std::string("kernel")) >> kernel;
 
     // TODO: Check bounds/params
-    return new KernelClassifier(&support_vectors[0], &dual_coeff[0], dual_coeff.size(), support_vectors.size() / dual_coeff.size(), intercept, kernel);
+    return new KernelClassifier(&support_vectors[0], &dual_coef[0], dual_coef.size(), support_vectors.size() / dual_coef.size(), intercept, kernel);
 }
 
 BinaryPredictor* binary_predictor_factory(std::map<std::string, msgpack::object> *kw) {

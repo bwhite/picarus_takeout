@@ -6,13 +6,13 @@
 #include "kernels_aux.h"
 
 namespace Picarus {
-KernelClassifier::KernelClassifier(double *support_vectors, double *dual_coeff, int num_support_vectors, int num_coefficients, double intercept, std::string kernel) :  num_support_vectors(num_support_vectors), num_coefficients(num_coefficients), intercept(intercept) {
+KernelClassifier::KernelClassifier(double *support_vectors, double *dual_coef, int num_support_vectors, int num_coefficients, double intercept, std::string kernel) :  num_support_vectors(num_support_vectors), num_coefficients(num_coefficients), intercept(intercept) {
     this->support_vectors = new double[num_support_vectors * num_coefficients];
     memcpy(this->support_vectors, support_vectors, sizeof(double) * num_support_vectors * num_coefficients);
-    this->dual_coeff = new double[num_support_vectors];
-    memcpy(this->dual_coeff, dual_coeff, sizeof(double) * num_support_vectors);
+    this->dual_coef = new double[num_support_vectors];
+    memcpy(this->dual_coef, dual_coef, sizeof(double) * num_support_vectors);
     this->kernel_temp = new double[num_support_vectors];
-    if (kernel.compare("hik"))
+    if (kernel.compare("hik") == 0)
         this->kernel_index = 0;
     else 
         this->kernel_index = -1;
@@ -21,7 +21,7 @@ KernelClassifier::KernelClassifier(double *support_vectors, double *dual_coeff, 
 KernelClassifier::~KernelClassifier() {
     delete [] support_vectors;
     delete [] kernel_temp;
-    delete [] dual_coeff;
+    delete [] dual_coef;
 }
 
 double KernelClassifier::decision_function(double *feature, int size) {
@@ -36,7 +36,7 @@ double KernelClassifier::decision_function(double *feature, int size) {
     default:
         return NAN;
     }
-    return dot_product(kernel_temp, dual_coeff, num_coefficients) + intercept;
+    return dot_product(kernel_temp, dual_coef, num_support_vectors) + intercept;
 }
 
 void KernelClassifier::process_binary(const unsigned char *input, int size, BinaryCollector *collector) {
