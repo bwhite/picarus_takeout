@@ -36,7 +36,7 @@ double KernelClassifier::decision_function(double *feature, int size) {
     default:
         return NAN;
     }
-    return dot_product(kernel_temp, dual_coef, num_support_vectors) + intercept;
+    return intercept - dot_product(kernel_temp, dual_coef, num_support_vectors);
 }
 
 void KernelClassifier::process_binary(const unsigned char *input, int size, BinaryCollector *collector) {
