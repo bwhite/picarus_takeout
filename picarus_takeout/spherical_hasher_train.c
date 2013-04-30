@@ -31,8 +31,8 @@ void spherical_hasher_train(const double *points, double *pivots, double *thresh
     int *cooccurrences = malloc(sizeof(int) * num_pivots * num_pivots); // #pivots x #pivots
     double *forces = malloc(sizeof(double) * num_pivots * num_dims); // #pivots x #dims
     dist_t *dists = malloc(sizeof(dist_t) * num_points); // #points
-    int i, j, k, l;
-    double v;
+    int i, j, k, l, cnt;
+    double v, c_abs_shift_sum, c_sum, c_sqr_sum, c_mean, c_var, mean_ratio, var_ratio;
     for (i = 0; i < max_iters; ++i) {
         memset(memberships, 0, num_pivots * num_points);
         /* Compute memberships */
@@ -62,10 +62,10 @@ void spherical_hasher_train(const double *points, double *pivots, double *thresh
                         if (memberships[l * num_points + k])
                             ++cooccurrences[j * num_pivots + l];
         /* Compute stopping conditions */
-        double c_abs_shift_sum = 0.;
-        double c_sum = 0.;
-        double c_sqr_sum = 0.;
-        int cnt = 0;
+        c_abs_shift_sum = 0.;
+        c_sum = 0.;
+        c_sqr_sum = 0.;
+        cnt = 0;
         for (j = 0; j < num_pivots - 1; ++j)
             for (k = j + 1; k < num_pivots; ++k) {
                 c_abs_shift_sum += abs(cooccurrences[j * num_pivots + k] - m_div_4);
@@ -73,10 +73,10 @@ void spherical_hasher_train(const double *points, double *pivots, double *thresh
                 c_sqr_sum += cooccurrences[j * num_pivots + k] * cooccurrences[j * num_pivots + k];
                 ++cnt;
             }
-        double c_mean = c_abs_shift_sum / cnt;
-        double c_var = (c_sqr_sum - c_sum * c_sum / cnt) / cnt;
-        double mean_ratio = c_mean / eps_m_scaled;
-        double var_ratio = c_var / eps_v_scaled;
+        c_mean = c_abs_shift_sum / cnt;
+        c_var = (c_sqr_sum - c_sum * c_sum / cnt) / cnt;
+        mean_ratio = c_mean / eps_m_scaled;
+        var_ratio = c_var / eps_v_scaled;
         printf("%d %f %f\n", i, mean_ratio, var_ratio);
         if (mean_ratio <= 1 && var_ratio <= 1)
             break;
