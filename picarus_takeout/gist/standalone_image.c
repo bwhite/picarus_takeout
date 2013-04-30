@@ -9,10 +9,11 @@
 #define NEW(type) NEWA(type,1)
 
 image_t *image_new(int width, int height) {
+  int wh;
   image_t *im=NEW(image_t);
   im->width=im->stride=width;
   im->height=height;
-  int wh=width*height;
+  wh=width*height;
   im->data=NEWA(float,wh);
   return im;
 }
@@ -30,10 +31,11 @@ void image_delete(image_t *im) {
 
 
 color_image_t *color_image_new(int width, int height) {
+  int wh;
   color_image_t *im=NEW(color_image_t);
   im->width=width;
   im->height=height;
-  int wh=width*height;
+  wh=width*height;
   im->c1=NEWA(float,wh);
   im->c2=NEWA(float,wh);
   im->c3=NEWA(float,wh);

@@ -24,6 +24,13 @@
 
 #endif
 
+#ifndef M_PI
+#define M_PI 3.14159265358979323846
+#endif
+
+#ifdef WIN32
+#define finite _finite
+#endif
 /*--------------------------------------------------------------------------*/
 
 static pthread_mutex_t fftw_mutex = PTHREAD_MUTEX_INITIALIZER;
@@ -196,23 +203,21 @@ static void fftshift(float *data, int w, int h)
 static image_list_t *create_gabor(int nscales, const int *or, int width, int height)
 {
     int i, j, fn;
-
     image_list_t *G = image_list_new();
-    
-    int nfilters = 0;
-    for(i=0;i<nscales;i++)  nfilters+=or[i];
-
-    float **param = (float **) malloc(nscales * nfilters * sizeof(float *));
-    for(i = 0; i < nscales * nfilters; i++) {
-        param[i] = (float *) malloc(4*sizeof(float));
-    }
-
     float *fx = (float *) malloc(width*height*sizeof(float));
     float *fy = (float *) malloc(width*height*sizeof(float));
     float *fr = (float *) malloc(width*height*sizeof(float));
     float *f  = (float *) malloc(width*height*sizeof(float));
-
     int l = 0;
+    int nfilters = 0;
+    float **param;
+    for(i=0;i<nscales;i++)  nfilters+=or[i];
+
+    param = (float **) malloc(nscales * nfilters * sizeof(float *));
+    for(i = 0; i < nscales * nfilters; i++) {
+        param[i] = (float *) malloc(4*sizeof(float));
+    }
+
     for(i = 1; i <= nscales; i++)
     {
         for(j = 1; j <= or[i-1]; j++)
@@ -284,10 +289,17 @@ static image_list_t *create_gabor(int nscales, const int *or, int width, int hei
 
 /*static*/ void prefilt(image_t *src, int fc)
 {
-    fftw_lock();
-
     int i, j;
+    image_t *img_pad;
+    int width, height, stride;
+    float *fx, *fy, *gfc;
+    fftwf_complex *in1, *in2, *out;
+    float s1;
+    fftwf_plan fft1, ifft1;
+    fftwf_plan fft2, ifft2;
 
+    fftw_lock();
+    
     /* Log */
     for(j = 0; j < src->height; j++)
     {
@@ -296,23 +308,23 @@ static image_list_t *create_gabor(int nscales, const int *or, int width, int hei
         }
     }
 
-    image_t *img_pad = image_add_padding(src, 5);
+    img_pad = image_add_padding(src, 5);
 
     /* Get sizes */
-    int width = img_pad->width;
-    int height = img_pad->height;
-    int stride = img_pad->stride;
+    width = img_pad->width;
+    height = img_pad->height;
+    stride = img_pad->stride;
 
     /* Alloc memory */
-    float *fx  = (float *) fftwf_malloc(width*height*sizeof(float));
-    float *fy  = (float *) fftwf_malloc(width*height*sizeof(float));
-    float *gfc = (float *) fftwf_malloc(width*height*sizeof(float));
-    fftwf_complex *in1 = (fftwf_complex *) fftwf_malloc(width*height*sizeof(fftwf_complex));
-    fftwf_complex *in2 = (fftwf_complex *) fftwf_malloc(width*height*sizeof(fftwf_complex));
-    fftwf_complex *out = (fftwf_complex *) fftwf_malloc(width*height*sizeof(fftwf_complex));
+    fx  = (float *) fftwf_malloc(width*height*sizeof(float));
+    fy  = (float *) fftwf_malloc(width*height*sizeof(float));
+    gfc = (float *) fftwf_malloc(width*height*sizeof(float));
+    in1 = (fftwf_complex *) fftwf_malloc(width*height*sizeof(fftwf_complex));
+    in2 = (fftwf_complex *) fftwf_malloc(width*height*sizeof(fftwf_complex));
+    out = (fftwf_complex *) fftwf_malloc(width*height*sizeof(fftwf_complex));
 
     /* Build whitening filter */
-    float s1 = fc/sqrt(log(2));
+    s1 = fc/sqrt(log(2));
     for(j = 0; j < height; j++)
     {
         for(i = 0; i < width; i++)
@@ -330,7 +342,7 @@ static image_list_t *create_gabor(int nscales, const int *or, int width, int hei
     fftshift(gfc, width, height);
 
     /* FFT */
-    fftwf_plan fft1 = fftwf_plan_dft_2d(width, height, in1, out, FFTW_FORWARD, FFTW_ESTIMATE);
+    fft1 = fftwf_plan_dft_2d(width, height, in1, out, FFTW_FORWARD, FFTW_ESTIMATE);
     fftw_unlock();
     fftwf_execute(fft1);
     fftw_lock();
@@ -346,7 +358,7 @@ static image_list_t *create_gabor(int nscales, const int *or, int width, int hei
     }
 
     /* IFFT */
-    fftwf_plan ifft1 = fftwf_plan_dft_2d(width, height, out, in2, FFTW_BACKWARD, FFTW_ESTIMATE);
+    ifft1 = fftwf_plan_dft_2d(width, height, out, in2, FFTW_BACKWARD, FFTW_ESTIMATE);
     fftw_unlock();
     fftwf_execute(ifft1);
     fftw_lock();
@@ -364,7 +376,7 @@ static image_list_t *create_gabor(int nscales, const int *or, int width, int hei
     }
 
     /* FFT */
-    fftwf_plan fft2 = fftwf_plan_dft_2d(width, height, in1, out, FFTW_FORWARD, FFTW_ESTIMATE);
+    fft2 = fftwf_plan_dft_2d(width, height, in1, out, FFTW_FORWARD, FFTW_ESTIMATE);
     fftw_unlock();
     fftwf_execute(fft2);
     fftw_lock();
@@ -380,7 +392,7 @@ static image_list_t *create_gabor(int nscales, const int *or, int width, int hei
     }
 
     /* IFFT */
-    fftwf_plan ifft2 = fftwf_plan_dft_2d(width, height, out, in2, FFTW_BACKWARD, FFTW_ESTIMATE);
+    ifft2 = fftwf_plan_dft_2d(width, height, out, in2, FFTW_BACKWARD, FFTW_ESTIMATE);
     fftw_unlock();
     fftwf_execute(ifft2);
     fftw_lock();
@@ -417,9 +429,17 @@ static image_list_t *create_gabor(int nscales, const int *or, int width, int hei
 
 static void color_prefilt(color_image_t *src, int fc)
 {
-    fftw_lock();
-
     int i, j;
+    color_image_t *img_pad;
+    int width, height;
+    float *fx, *fy, *gfc;
+    fftwf_complex *ina1, *ina2, *ina3, *inb1, *inb2, *inb3, *out1, *out2, *out3;
+    float s1;
+    fftwf_plan fft11, fft12, fft13, fft21, fft22, fft23;
+    fftwf_plan ifft11, ifft12, ifft13, ifft2;
+    float mean;
+
+    fftw_lock();
 
     /* Log */
     for(j = 0; j < src->height; j++)
@@ -432,28 +452,28 @@ static void color_prefilt(color_image_t *src, int fc)
         }
     }
 
-    color_image_t *img_pad = color_image_add_padding(src, 5);
+    img_pad = color_image_add_padding(src, 5);
 
     /* Get sizes */
-    int width = img_pad->width;
-    int height = img_pad->height;
+    width = img_pad->width;
+    height = img_pad->height;
 
     /* Alloc memory */
-    float *fx  = (float *) fftwf_malloc(width*height*sizeof(float));
-    float *fy  = (float *) fftwf_malloc(width*height*sizeof(float));
-    float *gfc = (float *) fftwf_malloc(width*height*sizeof(float));
-    fftwf_complex *ina1 = (fftwf_complex *) fftwf_malloc(width*height*sizeof(fftwf_complex));
-    fftwf_complex *ina2 = (fftwf_complex *) fftwf_malloc(width*height*sizeof(fftwf_complex));
-    fftwf_complex *ina3 = (fftwf_complex *) fftwf_malloc(width*height*sizeof(fftwf_complex));
-    fftwf_complex *inb1 = (fftwf_complex *) fftwf_malloc(width*height*sizeof(fftwf_complex));
-    fftwf_complex *inb2 = (fftwf_complex *) fftwf_malloc(width*height*sizeof(fftwf_complex));
-    fftwf_complex *inb3 = (fftwf_complex *) fftwf_malloc(width*height*sizeof(fftwf_complex));
-    fftwf_complex *out1 = (fftwf_complex *) fftwf_malloc(width*height*sizeof(fftwf_complex));
-    fftwf_complex *out2 = (fftwf_complex *) fftwf_malloc(width*height*sizeof(fftwf_complex));
-    fftwf_complex *out3 = (fftwf_complex *) fftwf_malloc(width*height*sizeof(fftwf_complex));
+    fx  = (float *) fftwf_malloc(width*height*sizeof(float));
+    fy  = (float *) fftwf_malloc(width*height*sizeof(float));
+    gfc = (float *) fftwf_malloc(width*height*sizeof(float));
+    ina1 = (fftwf_complex *) fftwf_malloc(width*height*sizeof(fftwf_complex));
+    ina2 = (fftwf_complex *) fftwf_malloc(width*height*sizeof(fftwf_complex));
+    ina3 = (fftwf_complex *) fftwf_malloc(width*height*sizeof(fftwf_complex));
+    inb1 = (fftwf_complex *) fftwf_malloc(width*height*sizeof(fftwf_complex));
+    inb2 = (fftwf_complex *) fftwf_malloc(width*height*sizeof(fftwf_complex));
+    inb3 = (fftwf_complex *) fftwf_malloc(width*height*sizeof(fftwf_complex));
+    out1 = (fftwf_complex *) fftwf_malloc(width*height*sizeof(fftwf_complex));
+    out2 = (fftwf_complex *) fftwf_malloc(width*height*sizeof(fftwf_complex));
+    out3 = (fftwf_complex *) fftwf_malloc(width*height*sizeof(fftwf_complex));
 
     /* Build whitening filter */
-    float s1 = fc/sqrt(log(2));
+    s1 = fc/sqrt(log(2));
     for(j = 0; j < height; j++)
     {
         for(i = 0; i < width; i++)
@@ -475,9 +495,9 @@ static void color_prefilt(color_image_t *src, int fc)
     fftshift(gfc, width, height);
 
     /* FFT */
-    fftwf_plan fft11 = fftwf_plan_dft_2d(width, height, ina1, out1, FFTW_FORWARD, FFTW_ESTIMATE);
-    fftwf_plan fft12 = fftwf_plan_dft_2d(width, height, ina2, out2, FFTW_FORWARD, FFTW_ESTIMATE);
-    fftwf_plan fft13 = fftwf_plan_dft_2d(width, height, ina3, out3, FFTW_FORWARD, FFTW_ESTIMATE);
+    fft11 = fftwf_plan_dft_2d(width, height, ina1, out1, FFTW_FORWARD, FFTW_ESTIMATE);
+    fft12 = fftwf_plan_dft_2d(width, height, ina2, out2, FFTW_FORWARD, FFTW_ESTIMATE);
+    fft13 = fftwf_plan_dft_2d(width, height, ina3, out3, FFTW_FORWARD, FFTW_ESTIMATE);
     fftw_unlock();
     fftwf_execute(fft11);
     fftwf_execute(fft12);
@@ -500,9 +520,9 @@ static void color_prefilt(color_image_t *src, int fc)
     }
 
     /* IFFT */
-    fftwf_plan ifft11 = fftwf_plan_dft_2d(width, height, out1, inb1, FFTW_BACKWARD, FFTW_ESTIMATE);
-    fftwf_plan ifft12 = fftwf_plan_dft_2d(width, height, out2, inb2, FFTW_BACKWARD, FFTW_ESTIMATE);
-    fftwf_plan ifft13 = fftwf_plan_dft_2d(width, height, out3, inb3, FFTW_BACKWARD, FFTW_ESTIMATE);
+    ifft11 = fftwf_plan_dft_2d(width, height, out1, inb1, FFTW_BACKWARD, FFTW_ESTIMATE);
+    ifft12 = fftwf_plan_dft_2d(width, height, out2, inb2, FFTW_BACKWARD, FFTW_ESTIMATE);
+    ifft13 = fftwf_plan_dft_2d(width, height, out3, inb3, FFTW_BACKWARD, FFTW_ESTIMATE);
     fftw_unlock();
     fftwf_execute(ifft11);
     fftwf_execute(ifft12);
@@ -518,7 +538,7 @@ static void color_prefilt(color_image_t *src, int fc)
             img_pad->c2[j*width+i] -= inb2[j*width+i][0] / (width*height);
             img_pad->c3[j*width+i] -= inb3[j*width+i][0] / (width*height);
 
-            float mean = (img_pad->c1[j*width+i] + img_pad->c2[j*width+i] + img_pad->c3[j*width+i])/3.0f;
+            mean = (img_pad->c1[j*width+i] + img_pad->c2[j*width+i] + img_pad->c3[j*width+i])/3.0f;
 
             ina1[j*width+i][0] = mean*mean;
             ina1[j*width+i][1] = 0.0f;
@@ -526,7 +546,7 @@ static void color_prefilt(color_image_t *src, int fc)
     }
 
     /* FFT */
-    fftwf_plan fft21 = fftwf_plan_dft_2d(width, height, ina1, out1, FFTW_FORWARD, FFTW_ESTIMATE);
+    fft21 = fftwf_plan_dft_2d(width, height, ina1, out1, FFTW_FORWARD, FFTW_ESTIMATE);
     fftw_unlock();
     fftwf_execute(fft21);
     fftw_lock();
@@ -542,7 +562,7 @@ static void color_prefilt(color_image_t *src, int fc)
     }
 
     /* IFFT */
-    fftwf_plan ifft2 = fftwf_plan_dft_2d(width, height, out1, inb1, FFTW_BACKWARD, FFTW_ESTIMATE);
+    ifft2 = fftwf_plan_dft_2d(width, height, out1, inb1, FFTW_BACKWARD, FFTW_ESTIMATE);
     fftw_unlock();
     fftwf_execute(ifft2);
     fftw_lock();
@@ -595,6 +615,7 @@ static void color_prefilt(color_image_t *src, int fc)
 static void down_N(float *res, image_t *src, int N)
 {
     int i, j, k, l;
+    float denom;
 
     int *nx = (int *) malloc((N+1)*sizeof(int));
     int *ny = (int *) malloc((N+1)*sizeof(int));
@@ -618,7 +639,7 @@ static void down_N(float *res, image_t *src, int N)
                 }
             }
 
-            float denom = (float)(ny[l+1]-ny[l])*(nx[k+1]-nx[k]);
+            denom = (float)(ny[l+1]-ny[l])*(nx[k+1]-nx[k]);
 
             res[k*N+l] = mean / denom;
         }
@@ -633,6 +654,7 @@ static void down_N(float *res, image_t *src, int N)
 static void color_down_N(float *res, color_image_t *src, int N, int c)
 {
     int i, j, k, l;
+    float denom;
 
     int *nx = (int *) malloc((N+1)*sizeof(int));
     int *ny = (int *) malloc((N+1)*sizeof(int));
@@ -676,7 +698,7 @@ static void color_down_N(float *res, color_image_t *src, int N, int c)
                 }
             }
 
-            float denom = (float)(ny[l+1]-ny[l])*(nx[k+1]-nx[k]);
+            denom = (float)(ny[l+1]-ny[l])*(nx[k+1]-nx[k]);
 
             res[k*N+l] = mean / denom;
             assert(finite(res[k*N+l]));
@@ -691,21 +713,25 @@ static void color_down_N(float *res, color_image_t *src, int N, int c)
 
 /*static*/ float *gist_gabor(image_t *src, const int w, image_list_t *G)
 {
-    fftw_lock();
-
     int i, j, k;
+    int width, height, stride;
+    float *res;
+    fftwf_complex *in1, *in2, *out1, *out2;
+    fftwf_plan fft, ifft;
+
+    fftw_lock();
     
     /* Get sizes */
-    int width = src->width;
-    int height = src->height;
-    int stride = src->stride;
+    width = src->width;
+    height = src->height;
+    stride = src->stride;
 
-    float *res = (float *) malloc(w*w*G->size*sizeof(float));
+    res = (float *) malloc(w*w*G->size*sizeof(float));
 
-    fftwf_complex *in1 = (fftwf_complex *) fftwf_malloc(width*height*sizeof(fftwf_complex));
-    fftwf_complex *in2 = (fftwf_complex *) fftwf_malloc(width*height*sizeof(fftwf_complex));
-    fftwf_complex *out1 = (fftwf_complex *) fftwf_malloc(width*height*sizeof(fftwf_complex));
-    fftwf_complex *out2 = (fftwf_complex *) fftwf_malloc(width*height*sizeof(fftwf_complex));
+    in1 = (fftwf_complex *) fftwf_malloc(width*height*sizeof(fftwf_complex));
+    in2 = (fftwf_complex *) fftwf_malloc(width*height*sizeof(fftwf_complex));
+    out1 = (fftwf_complex *) fftwf_malloc(width*height*sizeof(fftwf_complex));
+    out2 = (fftwf_complex *) fftwf_malloc(width*height*sizeof(fftwf_complex));
 
     for(j = 0; j < height; j++)
     {
@@ -717,8 +743,8 @@ static void color_down_N(float *res, color_image_t *src, int N, int c)
     }
 
     /* FFT */
-    fftwf_plan fft = fftwf_plan_dft_2d(width, height, in1, out1, FFTW_FORWARD, FFTW_ESTIMATE);
-    fftwf_plan ifft = fftwf_plan_dft_2d(width, height, out2, in2, FFTW_BACKWARD, FFTW_ESTIMATE);
+    fft = fftwf_plan_dft_2d(width, height, in1, out1, FFTW_FORWARD, FFTW_ESTIMATE);
+    ifft = fftwf_plan_dft_2d(width, height, out2, in2, FFTW_BACKWARD, FFTW_ESTIMATE);
 
     fftw_unlock();
     fftwf_execute(fft);
@@ -765,28 +791,32 @@ static void color_down_N(float *res, color_image_t *src, int N, int c)
 
 static float *color_gist_gabor(color_image_t *src, const int w, image_list_t *G)
 {
-    fftw_lock();
+    int i, j, k, width, height;
+    float *res;
+    fftwf_complex *ina1, *ina2, *ina3, *inb1, *inb2, *inb3;
+    fftwf_complex *outa1, *outa2, *outa3, *outb1, *outb2, *outb3;
+    fftwf_plan fft1, fft2, fft3, ifft1, ifft2, ifft3;
 
-    int i, j, k;
+    fftw_lock();
     
     /* Get sizes */
-    int width = src->width;
-    int height = src->height;
+    width = src->width;
+    height = src->height;
 
-    float *res = (float *) malloc(3*w*w*G->size*sizeof(float));
+    res = (float *) malloc(3*w*w*G->size*sizeof(float));
 
-    fftwf_complex *ina1  = (fftwf_complex *) fftwf_malloc(width*height*sizeof(fftwf_complex));
-    fftwf_complex *ina2  = (fftwf_complex *) fftwf_malloc(width*height*sizeof(fftwf_complex));
-    fftwf_complex *ina3  = (fftwf_complex *) fftwf_malloc(width*height*sizeof(fftwf_complex));
-    fftwf_complex *inb1  = (fftwf_complex *) fftwf_malloc(width*height*sizeof(fftwf_complex));
-    fftwf_complex *inb2  = (fftwf_complex *) fftwf_malloc(width*height*sizeof(fftwf_complex));
-    fftwf_complex *inb3  = (fftwf_complex *) fftwf_malloc(width*height*sizeof(fftwf_complex));
-    fftwf_complex *outa1 = (fftwf_complex *) fftwf_malloc(width*height*sizeof(fftwf_complex));
-    fftwf_complex *outa2 = (fftwf_complex *) fftwf_malloc(width*height*sizeof(fftwf_complex));
-    fftwf_complex *outa3 = (fftwf_complex *) fftwf_malloc(width*height*sizeof(fftwf_complex));
-    fftwf_complex *outb1 = (fftwf_complex *) fftwf_malloc(width*height*sizeof(fftwf_complex));
-    fftwf_complex *outb2 = (fftwf_complex *) fftwf_malloc(width*height*sizeof(fftwf_complex));
-    fftwf_complex *outb3 = (fftwf_complex *) fftwf_malloc(width*height*sizeof(fftwf_complex));
+    ina1  = (fftwf_complex *) fftwf_malloc(width*height*sizeof(fftwf_complex));
+    ina2  = (fftwf_complex *) fftwf_malloc(width*height*sizeof(fftwf_complex));
+    ina3  = (fftwf_complex *) fftwf_malloc(width*height*sizeof(fftwf_complex));
+    inb1  = (fftwf_complex *) fftwf_malloc(width*height*sizeof(fftwf_complex));
+    inb2  = (fftwf_complex *) fftwf_malloc(width*height*sizeof(fftwf_complex));
+    inb3  = (fftwf_complex *) fftwf_malloc(width*height*sizeof(fftwf_complex));
+    outa1 = (fftwf_complex *) fftwf_malloc(width*height*sizeof(fftwf_complex));
+    outa2 = (fftwf_complex *) fftwf_malloc(width*height*sizeof(fftwf_complex));
+    outa3 = (fftwf_complex *) fftwf_malloc(width*height*sizeof(fftwf_complex));
+    outb1 = (fftwf_complex *) fftwf_malloc(width*height*sizeof(fftwf_complex));
+    outb2 = (fftwf_complex *) fftwf_malloc(width*height*sizeof(fftwf_complex));
+    outb3 = (fftwf_complex *) fftwf_malloc(width*height*sizeof(fftwf_complex));
 
     for(j = 0; j < height; j++)
     {
@@ -803,12 +833,12 @@ static float *color_gist_gabor(color_image_t *src, const int w, image_list_t *G)
     }
 
     /* FFT */
-    fftwf_plan fft1  = fftwf_plan_dft_2d(width, height, ina1, outa1, FFTW_FORWARD, FFTW_ESTIMATE);
-    fftwf_plan fft2  = fftwf_plan_dft_2d(width, height, ina2, outa2, FFTW_FORWARD, FFTW_ESTIMATE);
-    fftwf_plan fft3  = fftwf_plan_dft_2d(width, height, ina3, outa3, FFTW_FORWARD, FFTW_ESTIMATE);
-    fftwf_plan ifft1 = fftwf_plan_dft_2d(width, height, outb1, inb1, FFTW_BACKWARD, FFTW_ESTIMATE);
-    fftwf_plan ifft2 = fftwf_plan_dft_2d(width, height, outb2, inb2, FFTW_BACKWARD, FFTW_ESTIMATE);
-    fftwf_plan ifft3 = fftwf_plan_dft_2d(width, height, outb3, inb3, FFTW_BACKWARD, FFTW_ESTIMATE);
+    fft1  = fftwf_plan_dft_2d(width, height, ina1, outa1, FFTW_FORWARD, FFTW_ESTIMATE);
+    fft2  = fftwf_plan_dft_2d(width, height, ina2, outa2, FFTW_FORWARD, FFTW_ESTIMATE);
+    fft3  = fftwf_plan_dft_2d(width, height, ina3, outa3, FFTW_FORWARD, FFTW_ESTIMATE);
+    ifft1 = fftwf_plan_dft_2d(width, height, outb1, inb1, FFTW_BACKWARD, FFTW_ESTIMATE);
+    ifft2 = fftwf_plan_dft_2d(width, height, outb2, inb2, FFTW_BACKWARD, FFTW_ESTIMATE);
+    ifft3 = fftwf_plan_dft_2d(width, height, outb3, inb3, FFTW_BACKWARD, FFTW_ESTIMATE);
 
     fftw_unlock();
     fftwf_execute(fft1);
@@ -892,6 +922,11 @@ float *bw_gist(image_t *src, int w, int a, int b, int c)
 float *bw_gist_scaletab(image_t *src, int w, int n_scale, const int *n_orientation)
 {
     int i;
+    int numberBlocks;
+    int tot_oris;
+    image_t *img;
+    image_list_t *G;
+    float *g;
 
     if(src->width < 8 || src->height < 8)
     {
@@ -899,16 +934,16 @@ float *bw_gist_scaletab(image_t *src, int w, int n_scale, const int *n_orientati
         return NULL;
     }
 
-    int numberBlocks = w;
-    int tot_oris=0;
+    numberBlocks = w;
+    tot_oris=0;
     for(i=0;i<n_scale;i++) tot_oris+=n_orientation[i];
 
-    image_t *img = image_cpy(src);
-    image_list_t *G = create_gabor(n_scale, n_orientation, img->width, img->height);
+    img = image_cpy(src);
+    G = create_gabor(n_scale, n_orientation, img->width, img->height);
 
     prefilt(img, 4);
 
-    float *g = gist_gabor(img, numberBlocks, G);
+    g = gist_gabor(img, numberBlocks, G);
 
     for(i = 0; i < tot_oris*w*w; i++)
     {
@@ -942,6 +977,11 @@ float *color_gist(color_image_t *src, int w, int a, int b, int c) {
 float *color_gist_scaletab(color_image_t *src, int w, int n_scale, const int *n_orientation) 
 {
     int i;
+    int numberBlocks;
+    int tot_oris;
+    color_image_t *img;
+    image_list_t *G;
+    float *g;
 
     if(src->width < 8 || src->height < 8)
     {
@@ -949,17 +989,17 @@ float *color_gist_scaletab(color_image_t *src, int w, int n_scale, const int *n_
         return NULL;
     }
 
-    int numberBlocks = w;
-    int tot_oris=0;
+    numberBlocks = w;
+    tot_oris=0;
     for(i=0;i<n_scale;i++) tot_oris+=n_orientation[i];
 
-    color_image_t *img = color_image_cpy(src);
+    img = color_image_cpy(src);
 
-    image_list_t *G = create_gabor(n_scale, n_orientation, img->width, img->height);
+    G = create_gabor(n_scale, n_orientation, img->width, img->height);
 
     color_prefilt(img, 4);
 
-    float *g = color_gist_gabor(img, numberBlocks, G);  
+    g = color_gist_gabor(img, numberBlocks, G);  
     
     for(i = 0; i < tot_oris*w*w*3; i++)
     {

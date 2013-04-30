@@ -5,6 +5,7 @@
 #include "stdlib.h"
 
 void color_gist_scaletab_wrap(unsigned char *data, int height, int width, int nblocks, int n_scale, const int *orientations_per_scale, float *desc, int desc_size) {
+    float *desc_out;
     color_image_t *im=color_image_new(width, height);
     int i, size = height * width;
     // Not only copies to data structure but also switches BGR -> RGB
@@ -14,7 +15,7 @@ void color_gist_scaletab_wrap(unsigned char *data, int height, int width, int nb
         im->c1[i] = *(data++);
     }
 
-    float *desc_out = color_gist_scaletab(im, nblocks, n_scale, orientations_per_scale);
+    desc_out = color_gist_scaletab(im, nblocks, n_scale, orientations_per_scale);
     if (desc_out != NULL)
         memcpy(desc, desc_out, desc_size * sizeof(float));
     free(desc_out);
