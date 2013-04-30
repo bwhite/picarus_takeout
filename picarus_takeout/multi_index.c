@@ -7,6 +7,7 @@
 #include <stdio.h>
 #include "multi_index.h"
 #include "hamming_aux.h"
+#include "picarus_math.h"
 
 uint32_t extract_bits(uint8_t *db, const int s, const int j) {
     uint64_t out = 0;
@@ -29,12 +30,13 @@ uint32_t extract_bits_part(uint8_t *db, const int s, const int s_part, const int
 }
 
 int optimal_m(const int n, const int b) {
+    int s, m_full, s_part;
     int m = round(b / log2(n));  /* s = ceil(b / (double)m) */
     m = m >= 1 ? m : 1;
     m = m >= b ? b : m;
-    int s = ceil(b / (double)m);
-    int m_full = b / s;  /* Number of whole hash tables (s bits) */
-    int s_part = b - m_full * s;  /* Number of bits in partial table */
+    s = ceil(b / (double)m);
+    m_full = b / s;  /* Number of whole hash tables (s bits) */
+    s_part = b - m_full * s;  /* Number of bits in partial table */
     if (s < 32 && m == m_full + (s_part > 0))
         return m;
     ++m;
@@ -57,12 +59,16 @@ uint32_t ***create_index(uint8_t *db, const int n, const int b, const int m) {
           m: (num_indexes):
      */
     uint32_t i, j, k;
+    uint32_t **cnts;
+    uint32_t ***index;
+#ifndef WIN32
     assert(n > 0);  /* Sanity */
     assert(b > 0);  /* Sanity */
     assert(m > 0);  /* Sanity */
     assert(b % 8 == 0);  /* Divisible by 8 */
     assert(m <= b);  /* At least as many bits than indexes */
     assert(b / m < 32);  /* Need to rewrite part of code to handle >= 32 */
+#endif
     /* Begin: Compute parameters */
     const uint32_t s = ceil(b / (double)m);  /* Max bits per hash table*/
     const int b_by_8 = b / 8;
@@ -76,9 +82,9 @@ uint32_t ***create_index(uint8_t *db, const int n, const int b, const int m) {
     assert(ceil(s / 8.) <= 4); /* Need to rewrite to handle */
     assert(b == m_full * s + s_part);  /* All bits are covered */
     assert(m == m_full + (s_part > 0));  /* No unused indexes */
-    uint32_t **cnts = malloc(m * sizeof(uint32_t*)); /* [m][2 ** s] */
+    cnts = malloc(m * sizeof(uint32_t*)); /* [m][2 ** s] */
     if (cnts == NULL) return NULL;
-    uint32_t ***index = malloc(m * sizeof(uint32_t**));
+    index = malloc(m * sizeof(uint32_t**));
     if (index == NULL) return NULL;
     /* Find much space we need by passing through the db once */
     for (i = 0; i < m_full; ++i) {
@@ -214,7 +220,7 @@ void combinations_non_recursive(int n, int k, uint32_t bucket,
 }
 
 void search_index_r(uint32_t ***index, int n, int b, int m, uint8_t *query, int r, uint32_t **results, int *results_size, int *results_capacity, uint8_t *results_mask) {
-    int i;
+    int i, r_part;
     uint32_t bucket;
     /* Begin: Compute parameters */
     const uint32_t s = ceil(b / (double)m);  /* Max bits per hash table*/
@@ -223,7 +229,7 @@ void search_index_r(uint32_t ***index, int n, int b, int m, uint8_t *query, int 
     /* End: Compute parameters */
     assert(r >= 0);
     r = r <= s ? r : s;  /* min(r, s) */
-    int r_part = r <= s_part ? r : s_part;  /* min(r_part, s_part) */
+    r_part = r <= s_part ? r : s_part;  /* min(r_part, s_part) */
     for (i = 0; i < m_full; ++i) {
         bucket = extract_bits(query, s, i);
         combinations_non_recursive(s, r, bucket, index[i], results, results_size, results_capacity, results_mask);

@@ -19,3 +19,14 @@ double dot_product(double *v0, double *v1, int size) {
     return out;
 }
 #endif
+
+
+#ifdef WIN32
+double round(double r) {
+    return (r > 0.0) ? floor(r + 0.5) : ceil(r - 0.5);
+}
+double log2(double n)
+{
+    return log(n) / 0.6931471805599453; // 0.6931471805599453 = log(2)
+}
+#endif

@@ -1,6 +1,7 @@
 #include <cmath>
 #include <cstdlib>
 #include <cassert>
+#include "picarus_math.h"
 #include "features.hpp"
 
 // small value, used to avoid division by zero
