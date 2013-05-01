@@ -1,6 +1,6 @@
 #include "kernels_aux.h"
 
-static inline double powi(double base, int times) {
+static double powi(double base, int times) {
     // Adapted from libsvm 3-1 (BSD license)
     double tmp = base, ret = 1.0;
     int t;
