@@ -49,13 +49,13 @@ int main(int argc, char **argv) {
         return 1;
     }
     std::vector<char> msgpack_binary;
-    if (!read_file(argv[1], &msgpack_binary)) {
+    if (read_file(argv[1], &msgpack_binary)) {
         std::cerr << "Could not open: " << argv[1] << std::endl;
         return 1;
     }
         
     std::vector<char> input_data;
-    if (!read_file(argv[2], &input_data)) {
+    if (read_file(argv[2], &input_data)) {
         std::cerr << "Could not open: " << argv[2] << std::endl;
         return 1;
     }
