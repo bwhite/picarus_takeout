@@ -51,11 +51,13 @@ int main(int argc, char **argv) {
     std::vector<char> msgpack_binary;
     if (!read_file(argv[1], &msgpack_binary)) {
         std::cerr << "Could not open: " << argv[1] << std::endl;
+        return 1;
     }
         
     std::vector<char> input_data;
     if (!read_file(argv[2], &input_data)) {
         std::cerr << "Could not open: " << argv[2] << std::endl;
+        return 1;
     }
     std::cout << "JSON Config Size (bytes): " << msgpack_binary.size() << std::endl;
     std::cout << "Input Image Size (bytes): " << input_data.size() << std::endl;
@@ -69,9 +71,7 @@ int main(int argc, char **argv) {
     if (data == NULL) {
         printf("Main: ModelChain returned NULL\n");
     } else {
-        if (!write_file(argv[3], (char *)data, size)) {
-            std::cerr << "Could not write output: " << argv[3] << std::endl;
-        }
+        write_file(argv[3], (char *)data, size);
         delete [] data;
     }
     return 0;
