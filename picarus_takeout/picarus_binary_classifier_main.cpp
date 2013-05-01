@@ -44,8 +44,8 @@ int read_file(const char *fn, std::vector<char> *str) {
 
 
 int main(int argc, char **argv) {
-    if (argc != 4) {
-        std::cerr << "Usage: " << argv[0] << " <config_path> <input_path> <output_path>" << std::endl;
+    if (argc != 3) {
+        std::cerr << "Usage: " << argv[0] << " <config_path> <input_path>" << std::endl;
         return 1;
     }
     std::vector<char> msgpack_binary;
@@ -71,7 +71,16 @@ int main(int argc, char **argv) {
     if (data == NULL) {
         std::cerr << "Main: ModelChain returned NULL" << std::endl;
     } else {
-        write_file(argv[3], (char *)data, size);
+        double confidence;
+        // This decodes the msgpack data, if it isn't a double
+        // it will raise an exception
+        try {
+            Picarus::double_fromstring(data, size, &confidence);
+        } catch (msgpack::type_error& e) {
+            std::cerr << "Output type is not a double!  This function only accepts models that output doubles, see picarus_takeout_main.cpp to handle arbitrary outputs." << std::endl;
+            return 1;
+        }
+        printf("Confidence[%.15g]\n", confidence);
         delete [] data;
     }
     return 0;
