@@ -15,5 +15,6 @@ Linux Install (Ubuntu)
 - Build OpenCV 2.4.4 from source
 - Get msgpack (apt-get install libmsgpack-dev)
 - Get blas (apt-get install libatlas3gf-base)
+- Get fftw3 (apt-get install libfftw3-dev)
 - cmake picarus_takeout
 - make
