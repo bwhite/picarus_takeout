@@ -91,7 +91,7 @@ class Test(unittest.TestCase):
                     print('Process Failed[%s][%s][%s][%s]' % (x, y, results[x][y], prev_results[x][y]))
                 #self.assertEqual(results[x][y], prev_results[x][y])
         blame_components(failed_models)
-        print('Number of models * images checked[%d]' % num_checked)
+        print('Number of models * images checked[%d][%r]' % (num_checked, picarus_model_class))
 
     def test_valgrind(self):
         model_hash = '42d5326a52f6143520094ae9cf9fbcde2e1947c6'
@@ -117,10 +117,10 @@ class Test(unittest.TestCase):
                 print(msgpack.loads(outm1))
                 self.assertEqual(outm0, outm1)
 
-    def atest_python(self):
+    def test_python(self):
         self._run(PicarusModel)
 
-    def atest_cmd(self):
+    def test_cmd(self):
         self._run(PicarusCommandModel)
 
 
