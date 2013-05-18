@@ -1,6 +1,6 @@
 #ifndef IMAGE_FEATURE2D
 #define IMAGE_FEATURE2D
-#include <opencv2/opencv.hpp>
+#include "opencv_helpers.hpp"
 #include <vector>
 #include "Model.hpp"
 

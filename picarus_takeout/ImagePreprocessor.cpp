@@ -1,5 +1,5 @@
 #include "ImagePreprocessor.hpp"
-#include <opencv2/opencv.hpp>
+#include "opencv_helpers.hpp"
 #include <cstring>
 namespace Picarus {
 

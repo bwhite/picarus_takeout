@@ -1,6 +1,6 @@
 #include <msgpack.hpp>
 #include <cstring>
-#include <opencv2/opencv.hpp> // TODO: Needed for image_bgr_fromstring, move to a "core" lib later
+#include "opencv_helpers.hpp" // TODO: Needed for image_bgr_fromstring, move to a "core" lib later
 #include "Model.hpp"
 #include <iostream>
 
