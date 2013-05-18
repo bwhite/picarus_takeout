@@ -1,0 +1,12 @@
+{
+   zlibpngok
+   Memcheck:Cond
+   fun:inflateReset2
+   fun:inflateInit2_
+   fun:png_create_read_struct_2
+   fun:png_create_read_struct
+   fun:_ZN2cv10PngDecoder10readHeaderEv
+   fun:_ZN2cvL9imdecode_ERKNS_3MatEiiPS0_.constprop.124
+   fun:_ZN2cv8imdecodeERKNS_11_InputArrayEi
+   fun:_ZN7Picarus20image_bgr_fromstringEPKhiPiS2_
+}
