@@ -16,6 +16,7 @@ GISTImageFeature::~GISTImageFeature() {
 double *GISTImageFeature::compute_feature(unsigned char *image, int height, int width, int *out_size) {
     float *feature_f = new float[descriptor_size];
     double *feature_d = new double[descriptor_size];
+
     color_gist_scaletab_wrap(image, height, width, num_blocks, orientations_per_scale.size(), &orientations_per_scale[0], feature_f, descriptor_size);
     for (int i = 0; i < descriptor_size; ++i)
         feature_d[i] = feature_f[i];

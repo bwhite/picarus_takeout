@@ -39,7 +39,7 @@ ext_modules = [Extension("_picarus_takeout",
                          ["picarus_takeout/wrap.pyx"] + SOURCES,
                          language="c++",
                          include_dirs=['picarus_takeout'],
-                         extra_compile_args=['-I', np.get_include(), '-O2', '-Wall', '-DUSE_BLAS'],
+                         extra_compile_args=['-I', np.get_include(), '-O0', '-Wall', '-DUSE_BLAS', '-g'],
                          libraries=['opencv_highgui', 'opencv_core', 'opencv_imgproc', 'opencv_objdetect', 'opencv_features2d', 'blas', 'msgpack', 'fftw3f'])]
 
 setup(name='picarus_takeout',

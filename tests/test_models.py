@@ -74,6 +74,8 @@ class Test(unittest.TestCase):
         results = {}
         model_path = 'picarus_takeout_models/test_models/'
         for x in glob.glob(model_path + 'picarus-*.msgpack.gz'):
+            if x.find('171c44d014e07bd2b73ce69ac6739e49412c1103') == -1:
+                continue
             model_results = {}
             model = picarus_model_class(x)
             for y in glob.glob('picarus_takeout_models/test_images/*'):
@@ -102,7 +104,7 @@ class Test(unittest.TestCase):
             for y in glob.glob('picarus_takeout_models/test_images/*'):
                 m.process_binary(y)
 
-    def test_compare(self):
+    def stest_compare(self):
         model_hash = '171c44d014e07bd2b73ce69ac6739e49412c1103'
         for x in glob.glob('picarus_takeout_models/test_models/picarus-*.msgpack.gz'):
             if x.find(model_hash) == -1:
@@ -123,10 +125,10 @@ class Test(unittest.TestCase):
                 print(msgpack.loads(outm3))
                 self.assertEqual(outm0, outm1)
 
-    def atest_python(self):
+    def test_python(self):
         self._run(PicarusModel)
 
-    def atest_cmd(self):
+    def test_cmd(self):
         self._run(PicarusCommandModel)
 
 
