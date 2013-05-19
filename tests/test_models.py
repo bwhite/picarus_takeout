@@ -80,10 +80,11 @@ class Test(unittest.TestCase):
     def _run(self, picarus_model_class):
         results = {}
         model_path = 'picarus_takeout_models/test_models/'
+        image_path = 'picarus_takeout_models/test_images/'
         for x in glob.glob(model_path + 'picarus-*.msgpack.gz'):
             model_results = {}
             model = picarus_model_class(x)
-            for y in glob.glob('picarus_takeout_models/test_images/*'):
+            for y in glob.glob(image_path + '*'):
                 model_results[os.path.basename(y)] = model.process_hash(y)
             results[os.path.basename(x)] = model_results
         json.dump(results, open('test_model_outputs-%s.js' % (picarus_model_class.__name__,), 'w'))
@@ -96,7 +97,7 @@ class Test(unittest.TestCase):
                 num_checked += 1
                 if results[x][y] != prev_results[x][y]:
                     # TODO: Cache results?
-                    print(msgpack.loads(picarus_model_class(x).process_binary(y)))
+                    print(msgpack.loads(picarus_model_class(model_path + x).process_binary(image_path + y)))
                     try:
                         failed_images[y] += 1
                     except KeyError:
