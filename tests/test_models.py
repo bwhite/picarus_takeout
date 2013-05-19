@@ -14,6 +14,13 @@ import msgpack
 from model_blame import blame_components
 
 
+def has_valgrind():
+    try:
+        return subprocess.Popen(['valgrind', '--help'], stdout=subprocess.PIPE, stderr=subprocess.PIPE).wait() == 0
+    except OSError:
+        return False
+
+
 class PicarusModel(object):
 
     def __init__(self, model_path):
@@ -93,7 +100,8 @@ class Test(unittest.TestCase):
         blame_components(failed_models)
         print('Number of models * images checked[%d][%r]' % (num_checked, picarus_model_class))
 
-    def atest_valgrind(self):
+    @unittest.skipUnless(has_valgrind(), 'requires Valgrind')
+    def test_valgrind(self):
         for x in glob.glob('picarus_takeout_models/test_models/picarus-*.msgpack.gz'):
             m = PicarusCommandModel(x, valgrind=True)
             for y in glob.glob('picarus_takeout_models/test_images/*'):
