@@ -13,4 +13,4 @@ before_install:
 install:
  - cmake . && make && sudo make install
 
-script: pushd tests && nosetests
+script: pushd tests && python test_models.py
