@@ -99,7 +99,10 @@ class Test(unittest.TestCase):
             for y in set(results[x]).intersection(set(prev_results[x])):
                 num_checked += 1
                 if results[x][y] != prev_results[x][y]:
-                    # TODO: Cache results?
+                    print('Current(b64msgpack)--------')
+                    print(results[x][y])
+                    print('Previous(b64msgpack)-------')
+                    print(prev_results[x][y])
                     print('Current--------')
                     print(msgpack.loads(base64.b64decode(results[x][y])))
                     print('Previous-------')
