@@ -90,14 +90,20 @@ class Test(unittest.TestCase):
         prev_results = json.load(open('picarus_takeout_models/test_models/test_model_outputs.js'))
         num_checked = 0
         failed_models = []
+        failed_images = {}
         for x in set(results).intersection(set(prev_results)):
             for y in set(results[x]).intersection(set(prev_results[x])):
                 num_checked += 1
                 if results[x][y] != prev_results[x][y]:
+                    try:
+                        failed_images[y] += 1
+                    except KeyError:
+                        failed_images[y] = 1
                     failed_models.append(model_path + x)
                     print('Process Failed[%s][%s][%s][%s]' % (x, y, results[x][y], prev_results[x][y]))
-        blame_components(failed_models)
         print('Number of models * images checked[%d][%r]' % (num_checked, picarus_model_class))
+        blame_components(failed_models)
+        print(failed_images)
         self.assertEqual(len(failed_models), 0)
 
     @unittest.skipUnless(has_valgrind(), 'requires Valgrind')
