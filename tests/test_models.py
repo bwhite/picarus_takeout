@@ -96,9 +96,9 @@ class Test(unittest.TestCase):
                 if results[x][y] != prev_results[x][y]:
                     failed_models.append(model_path + x)
                     print('Process Failed[%s][%s][%s][%s]' % (x, y, results[x][y], prev_results[x][y]))
-                self.assertEqual(results[x][y], prev_results[x][y])
         blame_components(failed_models)
         print('Number of models * images checked[%d][%r]' % (num_checked, picarus_model_class))
+        self.assertEqual(len(failed_models), 0)
 
     @unittest.skipUnless(has_valgrind(), 'requires Valgrind')
     def test_valgrind(self):
@@ -115,17 +115,11 @@ class Test(unittest.TestCase):
             print(x)
             m0 = PicarusModel(x)
             m1 = PicarusCommandModel(x)
-            m2 = PicarusCommandModel(x, True)
-            m3 = PicarusModel(x)
             for y in glob.glob('picarus_takeout_models/test_images/*'):
                 outm0 = m0.process_binary(y)
                 outm1 = m1.process_binary(y)
-                outm2 = m2.process_binary(y)
-                outm3 = m3.process_binary(y)
                 print(msgpack.loads(outm0))
                 print(msgpack.loads(outm1))
-                print(msgpack.loads(outm2))
-                print(msgpack.loads(outm3))
                 self.assertEqual(outm0, outm1)
 
     def test_python(self):
