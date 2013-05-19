@@ -93,8 +93,7 @@ class Test(unittest.TestCase):
         blame_components(failed_models)
         print('Number of models * images checked[%d][%r]' % (num_checked, picarus_model_class))
 
-    def test_valgrind(self):
-        model_hash = '42d5326a52f6143520094ae9cf9fbcde2e1947c6'
+    def atest_valgrind(self):
         for x in glob.glob('picarus_takeout_models/test_models/picarus-*.msgpack.gz'):
             m = PicarusCommandModel(x, valgrind=True)
             for y in glob.glob('picarus_takeout_models/test_images/*'):
