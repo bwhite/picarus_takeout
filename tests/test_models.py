@@ -11,6 +11,7 @@ import os
 import tempfile
 import subprocess
 import msgpack
+import base64
 from model_blame import blame_components
 
 
@@ -36,12 +37,13 @@ class PicarusModel(object):
 
 class PicarusCommandModel(object):
 
-    def __init__(self, model_path, valgrind=False):
+    def __init__(self, model_path, valgrind=False, verbose=False):
         self.cmd = 'picarus'
         self.model_fp = tempfile.NamedTemporaryFile()
         self.model_fp.write(gzip.GzipFile(model_path, 'rb').read())
         self.model_fp.flush()
         self.valgrind = valgrind
+        self.verbose = verbose
 
     def process_binary(self, image_path):
         output_fp = tempfile.NamedTemporaryFile()
@@ -56,10 +58,11 @@ class PicarusCommandModel(object):
                                  stdout=subprocess.PIPE,
                                  stderr=subprocess.PIPE)
         stdout, stderr = p.communicate()
-        print('\n\nstdout')
-        print(stdout)
-        print('stderr\n\n')
-        print(stderr)
+        if self.verbose:
+            print('\n\nstdout')
+            print(stdout)
+            print('stderr\n\n')
+            print(stderr)
         if self.valgrind:
             if stderr.find('ERROR SUMMARY: 0 errors from 0 contexts') == -1:
                 raise ValueError
@@ -85,10 +88,10 @@ class Test(unittest.TestCase):
             model_results = {}
             model = picarus_model_class(x)
             for y in glob.glob(image_path + '*'):
-                model_results[os.path.basename(y)] = model.process_hash(y)
+                model_results[os.path.basename(y)] = base64.b64encode(model.process_binary(y))
             results[os.path.basename(x)] = model_results
-        json.dump(results, open('test_model_outputs-%s.js' % (picarus_model_class.__name__,), 'w'))
-        prev_results = json.load(open('picarus_takeout_models/test_models/test_model_outputs.js'))
+        json.dump(results, gzip.GzipFile('test_model_outputs-%s.js.gz' % (picarus_model_class.__name__,), 'w'))
+        prev_results = json.load(gzip.GzipFile('picarus_takeout_models/test_models/test_model_outputs.js.gz'))
         num_checked = 0
         failed_models = []
         failed_images = {}
@@ -97,13 +100,16 @@ class Test(unittest.TestCase):
                 num_checked += 1
                 if results[x][y] != prev_results[x][y]:
                     # TODO: Cache results?
-                    print(msgpack.loads(picarus_model_class(model_path + x).process_binary(image_path + y)))
+                    print('Current--------')
+                    print(results[x][y])
+                    print('Previous-------')
+                    print(prev_results[x][y])
                     try:
                         failed_images[y] += 1
                     except KeyError:
                         failed_images[y] = 1
                     failed_models.append(model_path + x)
-                    print('Process Failed[%s][%s][%s][%s]' % (x, y, results[x][y], prev_results[x][y]))
+                    print('Process Failed[%s][%s][%s][%s]' % (x, y, hashlib.sha1(results[x][y]).hexdigest(), hashlib.sha1(prev_results[x][y]).hexdigest()))
         print('Number of models * images checked[%d][%r]' % (num_checked, picarus_model_class))
         blame_components(failed_models)
         print(failed_images)
