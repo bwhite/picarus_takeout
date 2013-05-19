@@ -30,7 +30,7 @@ class PicarusModel(object):
 class PicarusCommandModel(object):
 
     def __init__(self, model_path, valgrind=False):
-        self.cmd = '../picarus'
+        self.cmd = 'picarus'
         self.model_fp = tempfile.NamedTemporaryFile()
         self.model_fp.write(gzip.GzipFile(model_path, 'rb').read())
         self.model_fp.flush()
@@ -74,14 +74,12 @@ class Test(unittest.TestCase):
         results = {}
         model_path = 'picarus_takeout_models/test_models/'
         for x in glob.glob(model_path + 'picarus-*.msgpack.gz'):
-            if x.find('171c44d014e07bd2b73ce69ac6739e49412c1103') == -1:
-                continue
             model_results = {}
             model = picarus_model_class(x)
             for y in glob.glob('picarus_takeout_models/test_images/*'):
                 model_results[os.path.basename(y)] = model.process_hash(y)
             results[os.path.basename(x)] = model_results
-        json.dump(results, open('test_model_outputs.js', 'w'))
+        json.dump(results, open('test_model_outputs-%s.js' % (picarus_model_class.__name__,), 'w'))
         prev_results = json.load(open('picarus_takeout_models/test_models/test_model_outputs.js'))
         num_checked = 0
         failed_models = []
@@ -91,20 +89,18 @@ class Test(unittest.TestCase):
                 if results[x][y] != prev_results[x][y]:
                     failed_models.append(model_path + x)
                     print('Process Failed[%s][%s][%s][%s]' % (x, y, results[x][y], prev_results[x][y]))
-                #self.assertEqual(results[x][y], prev_results[x][y])
+                self.assertEqual(results[x][y], prev_results[x][y])
         blame_components(failed_models)
         print('Number of models * images checked[%d][%r]' % (num_checked, picarus_model_class))
 
-    def atest_valgrind(self):
+    def test_valgrind(self):
         model_hash = '42d5326a52f6143520094ae9cf9fbcde2e1947c6'
         for x in glob.glob('picarus_takeout_models/test_models/picarus-*.msgpack.gz'):
-            if x.find(model_hash) == -1:
-                continue
             m = PicarusCommandModel(x, valgrind=True)
             for y in glob.glob('picarus_takeout_models/test_images/*'):
                 m.process_binary(y)
 
-    def stest_compare(self):
+    def test_compare(self):
         model_hash = '171c44d014e07bd2b73ce69ac6739e49412c1103'
         for x in glob.glob('picarus_takeout_models/test_models/picarus-*.msgpack.gz'):
             if x.find(model_hash) == -1:

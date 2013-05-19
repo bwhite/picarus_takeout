@@ -435,7 +435,7 @@ static void color_prefilt(color_image_t *src, int fc)
     float *fx, *fy, *gfc;
     fftwf_complex *ina1, *ina2, *ina3, *inb1, *inb2, *inb3, *out1, *out2, *out3;
     float s1;
-    fftwf_plan fft11, fft12, fft13, fft21, fft22, fft23;
+    fftwf_plan fft11, fft12, fft13, fft21;
     fftwf_plan ifft11, ifft12, ifft13, ifft2;
     float mean;
 

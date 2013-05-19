@@ -11,8 +11,6 @@ before_install:
  - pushd tests && git clone git://github.com/bwhite/picarus_takeout_models.git && popd
 
 install:
- - sudo python setup.py -q install
- - cmake picarus_takeout
- - make
+ - cmake . && make && sudo make install
 
-script: nosetests
+script: pushd tests && nosetests
