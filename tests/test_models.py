@@ -101,9 +101,9 @@ class Test(unittest.TestCase):
                 if results[x][y] != prev_results[x][y]:
                     # TODO: Cache results?
                     print('Current--------')
-                    print(results[x][y])
+                    print(msgpack.loads(base64.b64decode(results[x][y])))
                     print('Previous-------')
-                    print(prev_results[x][y])
+                    print(msgpack.loads(base64.b64decode(prev_results[x][y])))
                     try:
                         failed_images[y] += 1
                     except KeyError:
