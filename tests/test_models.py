@@ -95,6 +95,8 @@ class Test(unittest.TestCase):
             for y in set(results[x]).intersection(set(prev_results[x])):
                 num_checked += 1
                 if results[x][y] != prev_results[x][y]:
+                    # TODO: Cache results?
+                    print(msgpack.loads(picarus_model_class(x).process_binary(y)))
                     try:
                         failed_images[y] += 1
                     except KeyError:
@@ -114,18 +116,16 @@ class Test(unittest.TestCase):
                 m.process_binary(y)
 
     def test_compare(self):
-        model_hash = '171c44d014e07bd2b73ce69ac6739e49412c1103'
         for x in glob.glob('picarus_takeout_models/test_models/picarus-*.msgpack.gz'):
-            if x.find(model_hash) == -1:
-                continue
             print(x)
             m0 = PicarusModel(x)
             m1 = PicarusCommandModel(x)
             for y in glob.glob('picarus_takeout_models/test_images/*'):
                 outm0 = m0.process_binary(y)
                 outm1 = m1.process_binary(y)
-                print(msgpack.loads(outm0))
-                print(msgpack.loads(outm1))
+                if outm0 != outm1:
+                    print(msgpack.loads(outm0))
+                    print(msgpack.loads(outm1))
                 self.assertEqual(outm0, outm1)
 
     def test_python(self):
