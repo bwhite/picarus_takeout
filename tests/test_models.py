@@ -49,7 +49,7 @@ class PicarusCommandModel(object):
     def process_binary(self, image_path):
         output_fp = tempfile.NamedTemporaryFile()
         if self.valgrind:
-            p = subprocess.Popen(['valgrind', '--suppressions=valgrind_suppressions.val', self.cmd, self.model_fp.name,
+            p = subprocess.Popen(['valgrind', '--gen-suppressions=yes', '--suppressions=valgrind_suppressions.val', self.cmd, self.model_fp.name,
                                   image_path, output_fp.name],
                                  stdout=subprocess.PIPE,
                                  stderr=subprocess.PIPE)
