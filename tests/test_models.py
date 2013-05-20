@@ -72,6 +72,7 @@ class PicarusCommandModel(object):
     def process_hash(self, image_path):
         return hashlib.sha1(self.process_binary(image_path)).hexdigest()
 
+
 class Test(unittest.TestCase):
 
     def setUp(self):
@@ -115,7 +116,7 @@ class Test(unittest.TestCase):
         for x in set(results).intersection(set(prev_results)):
             for y in set(results[x]).intersection(set(prev_results[x])):
                 num_checked += 1
-                if not self.almostEqualAny(results[x][y], prev_results[x][y]):
+                if not self.almostEqualAny(msgpack.loads(base64.b64decode(results[x][y])), msgpack.loads(base64.b64decode(prev_results[x][y]))):
                     print('Current(b64msgpack)--------')
                     print(results[x][y])
                     print('Previous(b64msgpack)-------')
