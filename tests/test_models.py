@@ -65,12 +65,12 @@ class PicarusCommandModel(object):
             print('stderr\n\n')
             print(stderr)
         if self.valgrind:
-            if not self.verbose:
-                print('\n\nstdout')
-                print(stdout)
-                print('stderr\n\n')
-                print(stderr)
             if stderr.find('ERROR SUMMARY: 0 errors from 0 contexts') == -1:
+                if not self.verbose:
+                    print('\n\nstdout')
+                    print(stdout)
+                    print('stderr\n\n')
+                    print(stderr)
                 raise ValueError
         return open(output_fp.name, 'rb').read()
 
