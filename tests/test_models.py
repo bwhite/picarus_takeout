@@ -89,11 +89,11 @@ class Test(unittest.TestCase):
         if isinstance(a, dict):
             if set(a.keys()) != set(b.keys()):
                 return False
-            return all(self.assertAlmostEqualAny(v, b[k]) for k, v in a.items())
+            return all(self.almostEqualAny(v, b[k]) for k, v in a.items())
         elif isinstance(a, (list, tuple)):
             if len(a) != len(b):
                 return False
-            return all(self.assertAlmostEqualAny(x, y) for x, y in zip(a, b))
+            return all(self.almostEqualAny(x, y) for x, y in zip(a, b))
         elif isinstance(a, float):
             return math.fabs(a - b) <= tol
         return False
