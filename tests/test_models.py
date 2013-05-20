@@ -152,6 +152,7 @@ class Test(unittest.TestCase):
     @unittest.skipUnless(has_valgrind(), 'requires Valgrind')
     def test_valgrind(self):
         for x in glob.glob('picarus_takeout_models/test_models/picarus-*.msgpack.gz'):
+            print('Valgrind Model[%s]' % x)
             m = PicarusCommandModel(x, valgrind=True)
             for y in glob.glob('picarus_takeout_models/test_images/*'):
                 m.process_binary(y)
