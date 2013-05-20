@@ -83,7 +83,12 @@ void ModelChain::process_binary(const unsigned char *input, int size, BinaryColl
             (*collector)(NULL, 0);
             return;
         }
-            
+#ifdef DEBUG
+        printf("Model Output[%d]:", i);
+        for (int j = 0; j < cur_size; ++j)
+            printf(" %d", (int)cur_data[j]);
+        printf("\n");
+#endif
     }
     (*collector)(cur_data, cur_size);
     if (cur_data != input)

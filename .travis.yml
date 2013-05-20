@@ -11,6 +11,6 @@ before_install:
  - pushd tests && git clone git://github.com/bwhite/picarus_takeout_models.git && popd
 
 install:
- - cmake . && make && sudo make install
+ - cmake . -DCMAKE_BUILD_TYPE=debug && make && sudo make install
 
 script: pushd tests && python test_models.py
