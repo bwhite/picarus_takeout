@@ -144,7 +144,6 @@ class Test(unittest.TestCase):
         print(failed_images)
         self.assertEqual(len(failed_models), 0)
 
-    @unittest.skip('Skipped')
     @unittest.skipUnless(has_valgrind(), 'requires Valgrind')
     def test_valgrind(self):
         for x in glob.glob('picarus_takeout_models/test_models/picarus-*.msgpack.gz'):
