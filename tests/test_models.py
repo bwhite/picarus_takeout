@@ -116,7 +116,9 @@ class Test(unittest.TestCase):
         for x in set(results).intersection(set(prev_results)):
             for y in set(results[x]).intersection(set(prev_results[x])):
                 num_checked += 1
-                if not self.almostEqualAny(msgpack.loads(base64.b64decode(results[x][y])), msgpack.loads(base64.b64decode(prev_results[x][y]))):
+                a = msgpack.loads(base64.b64decode(results[x][y]))
+                b = msgpack.loads(base64.b64decode(prev_results[x][y]))
+                if not self.almostEqualAny(a, b):
                     print('Current(b64msgpack)--------')
                     print(results[x][y])
                     print('Previous(b64msgpack)-------')
