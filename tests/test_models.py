@@ -12,6 +12,7 @@ import tempfile
 import subprocess
 import msgpack
 import base64
+import math
 from model_blame import blame_components
 
 
@@ -71,7 +72,6 @@ class PicarusCommandModel(object):
     def process_hash(self, image_path):
         return hashlib.sha1(self.process_binary(image_path)).hexdigest()
 
-
 class Test(unittest.TestCase):
 
     def setUp(self):
@@ -79,6 +79,23 @@ class Test(unittest.TestCase):
 
     def tearDown(self):
         pass
+
+    def almostEqualAny(self, a, b, tol=10**-9):
+        if a == b:
+            return True
+        if not isinstance(b, type(a)):
+            return False
+        if isinstance(a, dict):
+            if set(a.keys()) != set(b.keys()):
+                return False
+            return all(self.assertAlmostEqualAny(v, b[k]) for k, v in a.items())
+        elif isinstance(a, (list, tuple)):
+            if len(a) != len(b):
+                return False
+            return all(self.assertAlmostEqualAny(x, y) for x, y in zip(a, b))
+        elif isinstance(a, float):
+            return math.fabs(a - b) <= tol
+        return False
 
     def _run(self, picarus_model_class):
         results = {}
@@ -98,7 +115,7 @@ class Test(unittest.TestCase):
         for x in set(results).intersection(set(prev_results)):
             for y in set(results[x]).intersection(set(prev_results[x])):
                 num_checked += 1
-                if results[x][y] != prev_results[x][y]:
+                if not self.almostEqualAny(results[x][y], prev_results[x][y]):
                     print('Current(b64msgpack)--------')
                     print(results[x][y])
                     print('Previous(b64msgpack)-------')
@@ -118,6 +135,7 @@ class Test(unittest.TestCase):
         print(failed_images)
         self.assertEqual(len(failed_models), 0)
 
+    @unittest.skip('Skipped')
     @unittest.skipUnless(has_valgrind(), 'requires Valgrind')
     def test_valgrind(self):
         for x in glob.glob('picarus_takeout_models/test_models/picarus-*.msgpack.gz'):
