@@ -116,13 +116,12 @@ class Test(unittest.TestCase):
         for x in set(results).intersection(set(prev_results)):
             for y in set(results[x]).intersection(set(prev_results[x])):
                 num_checked += 1
+                if results[x][y] == prev_results[x][y]:
+                    continue
                 try:
                     a = msgpack.loads(base64.b64decode(results[x][y]))
                 except:
-                    print(results[x][y])
-                    print(x)
-                    print(y)
-                    raise
+                    raise ValueError('Cant test for partial equality because not msgpack encoded')
                 b = msgpack.loads(base64.b64decode(prev_results[x][y]))
                 if not self.almostEqualAny(a, b):
                     print('Current(b64msgpack)--------')
