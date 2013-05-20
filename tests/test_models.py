@@ -81,7 +81,7 @@ class Test(unittest.TestCase):
     def tearDown(self):
         pass
 
-    def almostEqualAny(self, a, b, tol=10**-9):
+    def almostEqualAny(self, a, b, tol=10**-6):
         if a == b:
             return True
         if not isinstance(b, type(a)):
@@ -124,14 +124,15 @@ class Test(unittest.TestCase):
                     raise ValueError('Cant test for partial equality because not msgpack encoded')
                 b = msgpack.loads(base64.b64decode(prev_results[x][y]))
                 if not self.almostEqualAny(a, b):
-                    print('Current(b64msgpack)--------')
-                    print(results[x][y])
-                    print('Previous(b64msgpack)-------')
-                    print(prev_results[x][y])
-                    print('Current--------')
-                    print(msgpack.loads(base64.b64decode(results[x][y])))
-                    print('Previous-------')
-                    print(msgpack.loads(base64.b64decode(prev_results[x][y])))
+                    if 1:
+                        print('Current(b64msgpack)--------')
+                        print(results[x][y])
+                        print('Previous(b64msgpack)-------')
+                        print(prev_results[x][y])
+                        print('Current--------')
+                        print(msgpack.loads(base64.b64decode(results[x][y])))
+                        print('Previous-------')
+                        print(msgpack.loads(base64.b64decode(prev_results[x][y])))
                     try:
                         failed_images[y] += 1
                     except KeyError:
