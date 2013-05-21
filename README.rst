@@ -1,9 +1,13 @@
 Picarus Takeout
 
+.. image:: https://secure.travis-ci.org/bwhite/picarus_takeout.png
+    :target: http://travis-ci.org/bwhite/picarus_takeout
+    :alt: Build Status of the master branch
+
 License: Apache 2.0 License
 
 Dependencies
-- OpenCV 2.4.4(http://opencv.org/): Image IO, Image Resize, Image Color Convert (BSD License)
+- OpenCV 2.4.5(http://opencv.org/): Image IO, Image Resize, Image Color Convert (BSD License)
 - Msgpack(https://github.com/msgpack/msgpack-c): Serialization (Apache 2.0 License)
 - Blas(http://math-atlas.sourceforge.net/): Fast math (BSD License)
 - fftw3
