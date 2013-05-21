@@ -10,20 +10,3 @@
    fun:_ZN2cv8imdecodeERKNS_11_InputArrayEi
    fun:_ZN7Picarus20image_bgr_fromstringEPKhiPiS2_
 }
-
-{
-   libpng
-   Memcheck:Value8
-   fun:crc32
-   obj:/lib/x86_64-linux-gnu/libpng12.so.0.46.0
-   fun:png_write_chunk
-   obj:/lib/x86_64-linux-gnu/libpng12.so.0.46.0
-   obj:/lib/x86_64-linux-gnu/libpng12.so.0.46.0
-   obj:/lib/x86_64-linux-gnu/libpng12.so.0.46.0
-   obj:/lib/x86_64-linux-gnu/libpng12.so.0.46.0
-   fun:png_write_row
-   fun:png_write_image
-   fun:_ZN2cv10PngEncoder5writeERKNS_3MatERKSt6vectorIiSaIiEE
-   fun:_ZN2cv8imencodeERKSsRKNS_11_InputArrayERSt6vectorIhSaIhEERKS5_IiSaIiEE
-   fun:_ZN7Picarus17ImagePreprocessor8asbinaryEPKhiPi
-}
