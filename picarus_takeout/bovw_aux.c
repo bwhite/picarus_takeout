@@ -3,6 +3,8 @@
 void bovw_fast_hist(unsigned int *neighbor_map, unsigned int *bovw, const int height, const int width, const int bins, const int level) {
     int i, j;
     int bin_i, bin_j;
+    if (!height || !width)
+        return;
     const double height_inv = 1. / height;
     const double width_inv = 1. / width;
     const int level_bins = 1 << level;
