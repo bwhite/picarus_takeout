@@ -14,6 +14,9 @@ static void normalize_histogram(unsigned int *hist, double *hist_norm, int start
     double normalize_sum = 0.;
     for (int i = start; i < stop; ++i)
         normalize_sum += hist[i];
+    // Prevent divide by zero
+    if (normalize_sum == 0.)
+        normalize_sum = 1;
     for (int i = start; i < stop; ++i)
         hist_norm[i] = (hist[i] / normalize_sum) * scale;           
 }
