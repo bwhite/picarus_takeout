@@ -2,7 +2,6 @@
 #include "BOVWImageFeature.hpp"
 #include "pyramid_histogram_aux.h"
 #include "knearest_neighbor.h"
-#include <cstdio>
 
 namespace Picarus {
 
@@ -34,7 +33,6 @@ void BOVWImageFeature::process_binary(const unsigned char *input, int size, Bina
     }
     unsigned int *label_image = bovw_label_image(&vec[0], shape[0], shape[1]);
     int feature_size;
-    printf("%d %d\n", shape[0], shape[1]);
     double *feature = pyramid_histogram(label_image, shape[0], shape[1], num_clusters, levels, &feature_size);
     std::vector<double> out_vec(feature, feature + feature_size);  // TODO: Remove copy!
     std::vector<int> out_shape(1);
