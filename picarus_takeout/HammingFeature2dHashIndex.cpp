@@ -10,10 +10,10 @@
 
 namespace Picarus {
 HammingFeature2dHashIndex::HammingFeature2dHashIndex(const unsigned char *hashes, int *indeces, int num_hashes, int num_bytes,
-                                                     const std::vector<std::string> &labels, int max_results, int max_keypoint_results, int hamming_thresh) : num_hashes(num_hashes), num_bytes(num_bytes), labels(labels), max_results(max_results), max_keypoint_results(max_keypoint_results), hamming_thresh(hamming_thresh) {
+                                                     const std::vector<std::string> &labels, int max_results, int max_keypoint_results, int hamming_thresh) : mih(false), num_hashes(num_hashes), num_bytes(num_bytes), labels(labels), max_results(max_results), max_keypoint_results(max_keypoint_results), hamming_thresh(hamming_thresh) {
     printf("num_hashes[%d] num_bytes[%d] max_results[%d] num_labels[%d] max_keypoint_results[%d] hamming_thresh[%d]\n", num_hashes, num_bytes, max_results, labels.size(), max_keypoint_results, hamming_thresh);
-    // TODO: Add back in linear hamming distance code
-    this->index = new HammingMultiIndex(hashes, num_hashes, num_bytes, max_keypoint_results);
+    if (this->mih)
+        this->index = new HammingMultiIndex(hashes, num_hashes, num_bytes, max_keypoint_results);
     this->hashes = new unsigned char[num_hashes * num_bytes];
     memcpy(this->hashes, hashes, num_hashes * num_bytes);
     this->indeces = new int[num_hashes];
@@ -31,8 +31,8 @@ HammingFeature2dHashIndex::HammingFeature2dHashIndex(const unsigned char *hashes
 }
 
 HammingFeature2dHashIndex::~HammingFeature2dHashIndex() {
-    delete index;
-
+    if (this->mih)
+        delete index;
     delete [] hashes;
     delete [] indeces;
     delete [] idf;
@@ -49,44 +49,46 @@ std::vector<std::pair<double, std::string> > *HammingFeature2dHashIndex::query_i
         return NULL;
     }
     std::map<int, double> dists;
-    /*
-    for (i = 0; i < num_hashes; ++i) {
-        max_valid_ind = -1;
-        place_dist_clear_arrays(result_indeces, result_dists, max_keypoint_results);
-        memset(temp_hamming, 0, sizeof(int) * this->num_hashes);
-        hamdist_cmap_lut16(this->hashes, hashes + num_bytes * i, temp_hamming, num_bytes, this->num_hashes, 1);
-        for (j = 0; j < this->num_hashes; ++j)
-            max_valid_ind = place_dist_in_results(j, temp_hamming[j], result_indeces, result_dists, max_keypoint_results, max_valid_ind);
-        printf("max_valid_ind[%d]\n", max_valid_ind);
-        for (j = 0; j < max_valid_ind + 1; ++j) {
-            if (j == 0)
-                printf("b: %d %d %f\n", i, j, result_dists[j]);
-            if (result_dists[j] > hamming_thresh)
-                break;
-            try {
-                prev_dist_val = dists.at(indeces[result_indeces[j]]);
-            } catch (const std::out_of_range& oor) {
-                prev_dist_val = 0.;
+    if (mih) {
+        for (i = 0; i < num_hashes; ++i) {
+            int num_results = 0;
+            int *results = index->query_index(hashes + num_bytes * i, num_bytes, &num_results);
+            for (j = 0; j < num_results; ++j) {
+                if (j == 0)
+                    printf("b: %d %d %d %d\n", i, j, results[j * 2], results[j * 2 + 1]);
+                if (results[j * 2] > hamming_thresh)
+                    break;
+                try {
+                    prev_dist_val = dists.at(indeces[results[j * 2 + 1]]);
+                } catch (const std::out_of_range& oor) {
+                    prev_dist_val = 0.;
+                }
+                dists[indeces[results[j * 2 + 1]]] = prev_dist_val - idf[indeces[results[j * 2 + 1]]];  // TODO(brandyn): Incorporate TF-IDF if num_bytes is small enough to store densely
             }
-            dists[indeces[result_indeces[j]]] = prev_dist_val - idf[indeces[result_indeces[j]]];  // TODO(brandyn): Incorporate TF-IDF if num_bytes is small enough to store densely
+            delete [] results;
         }
-    }*/
-    for (i = 0; i < num_hashes; ++i) {
-        int num_results = 0;
-        int *results = index->query_index(hashes + num_bytes * i, num_bytes, &num_results);
-        for (j = 0; j < num_results; ++j) {
-            if (j == 0)
-                printf("b: %d %d %d %d\n", i, j, results[j * 2], results[j * 2 + 1]);
-            if (results[j * 2] > hamming_thresh)
-                break;
-            try {
-                prev_dist_val = dists.at(indeces[results[j * 2 + 1]]);
-            } catch (const std::out_of_range& oor) {
-                prev_dist_val = 0.;
+    } else {
+        for (i = 0; i < num_hashes; ++i) {
+            max_valid_ind = -1;
+            place_dist_clear_arrays(result_indeces, result_dists, max_keypoint_results);
+            memset(temp_hamming, 0, sizeof(int) * this->num_hashes);
+            hamdist_cmap_lut16(this->hashes, hashes + num_bytes * i, temp_hamming, num_bytes, this->num_hashes, 1);
+            for (j = 0; j < this->num_hashes; ++j)
+                max_valid_ind = place_dist_in_results(j, temp_hamming[j], result_indeces, result_dists, max_keypoint_results, max_valid_ind);
+            printf("max_valid_ind[%d]\n", max_valid_ind);
+            for (j = 0; j < max_valid_ind + 1; ++j) {
+                if (j == 0)
+                    printf("b: %d %d %f\n", i, j, result_dists[j]);
+                if (result_dists[j] > hamming_thresh)
+                    break;
+                try {
+                    prev_dist_val = dists.at(indeces[result_indeces[j]]);
+                } catch (const std::out_of_range& oor) {
+                    prev_dist_val = 0.;
+                }
+                dists[indeces[result_indeces[j]]] = prev_dist_val - idf[indeces[result_indeces[j]]];  // TODO(brandyn): Incorporate TF-IDF if num_bytes is small enough to store densely
             }
-            dists[indeces[results[j * 2 + 1]]] = prev_dist_val - idf[indeces[results[j * 2 + 1]]];  // TODO(brandyn): Incorporate TF-IDF if num_bytes is small enough to store densely
         }
-        delete [] results;
     }
     std::vector<std::pair<double, std::string> > *dists_out  = new std::vector<std::pair<double, std::string> >();
     const int num_results = dists.size() > max_results ? max_results : dists.size();

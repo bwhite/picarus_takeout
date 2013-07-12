@@ -8,6 +8,7 @@
 namespace Picarus {
 class HammingFeature2dHashIndex : public Model {
 private:
+    const bool mih;
     const int num_hashes;
     const int num_bytes;
     const std::vector<std::string> labels;
