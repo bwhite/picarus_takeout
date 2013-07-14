@@ -1,6 +1,7 @@
 #ifndef PICARUS_TAKEOUT
 #define PICARUS_TAKEOUT
 #include "ImagePreprocessor.hpp"
+#include "ImageWarp.hpp"
 #include "HistogramImageFeature.hpp"
 #include "GISTImageFeature.hpp"
 #include "PixelsImageFeature.hpp"
@@ -22,6 +23,7 @@
 #include <msgpack.hpp>
 namespace Picarus {
 ImagePreprocessor* image_preprocessor_factory(std::map<std::string, msgpack::object> *kw);
+ImageWarp* image_warp_factory(std::map<std::string, msgpack::object> *kw);
 PixelsImageFeature* pixels_image_feature_factory(std::map<std::string, msgpack::object> *kw);
 HistogramImageFeature* histogram_image_feature_factory(std::map<std::string, msgpack::object> *kw);
 GISTImageFeature* gist_image_feature_factory(std::map<std::string, msgpack::object> *kw);

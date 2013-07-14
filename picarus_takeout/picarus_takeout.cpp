@@ -23,6 +23,18 @@ ImagePreprocessor* image_preprocessor_factory(std::map<std::string, msgpack::obj
     // TODO: Check bounds/params
 }
 
+ImageWarp* image_warp_factory(std::map<std::string, msgpack::object> *kw) {
+    std::vector<double> h;
+    int height, width;
+    std::string compression;
+    kw->at(std::string("compression")) >> compression;
+    kw->at(std::string("height")) >> height;
+    kw->at(std::string("width")) >> width;
+    kw->at(std::string("h")) >> h;
+    return new ImageWarp(h, height, width, compression);
+    // TODO: Check bounds/params
+}
+
 HistogramImageFeature* histogram_image_feature_factory(std::map<std::string, msgpack::object> *kw) {
     std::string mode;
     int levels;

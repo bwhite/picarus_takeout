@@ -18,6 +18,8 @@ ModelChain::ModelChain(const char *msgpack_binary, int size) {
         model->at(std::string("kw")) >> kw;
         if (!name.compare("picarus.ImagePreprocessor"))
             this->models.push_back(image_preprocessor_factory(&kw));
+        else if (!name.compare("picarus.ImageWarp"))
+            this->models.push_back(image_warp_factory(&kw));
         else if (!name.compare("picarus.HistogramImageFeature"))
             this->models.push_back(histogram_image_feature_factory(&kw));
         else if (!name.compare("picarus.GISTImageFeature"))
