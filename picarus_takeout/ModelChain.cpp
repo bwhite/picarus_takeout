@@ -36,6 +36,8 @@ ModelChain::ModelChain(const char *msgpack_binary, int size) {
             this->models.push_back(kernel_classifier_factory(&kw));
         else if (!name.compare("picarus.BRISKImageFeature2d"))
             this->models.push_back(brisk_image_feature2d_factory(&kw));
+        else if (!name.compare("picarus.FREAKImageFeature2d"))
+            this->models.push_back(freak_image_feature2d_factory(&kw));
         else if (!name.compare("picarus.BinaryPredictor"))
             this->models.push_back(binary_predictor_factory(&kw));
         else if (!name.compare("picarus.SphericalHasher"))

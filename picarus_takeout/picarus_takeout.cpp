@@ -91,6 +91,20 @@ BRISKImageFeature2d* brisk_image_feature2d_factory(std::map<std::string, msgpack
     return new BRISKImageFeature2d(thresh, octaves, pattern_scale);
 }
 
+FREAKImageFeature2d* freak_image_feature2d_factory(std::map<std::string, msgpack::object> *kw) {
+    bool orientation_norm, scale_norm;
+    double pattern_scale;
+    int octaves, thresh;
+    
+    kw->at(std::string("thresh")) >> thresh;
+    kw->at(std::string("orientation_norm")) >> orientation_norm;
+    kw->at(std::string("scale_norm")) >> scale_norm;
+    kw->at(std::string("pattern_scale")) >> pattern_scale;
+    kw->at(std::string("octaves")) >> octaves;
+    // TODO: Check bounds/params
+    return new FREAKImageFeature2d(thresh, orientation_norm, scale_norm, pattern_scale, octaves);
+}
+
 LinearClassifier* linear_classifier_factory(std::map<std::string, msgpack::object> *kw) {
     std::vector<double> coefficients;
     double intercept;

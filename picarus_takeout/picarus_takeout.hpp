@@ -16,6 +16,7 @@
 #include "SphericalHasher.hpp"
 #include "SphericalHashIndex.hpp"
 #include "BRISKImageFeature2d.hpp"
+#include "FREAKImageFeature2d.hpp"
 #include "HammingFeature2dHashIndex.hpp"
 #include <string>
 #include <vector>
@@ -38,6 +39,7 @@ BinaryPredictor* binary_predictor_factory(std::map<std::string, msgpack::object>
 SphericalHasher* spherical_hasher_factory(std::map<std::string, msgpack::object> *kw);
 SphericalHashIndex* spherical_hash_index_factory(std::map<std::string, msgpack::object> *kw);
 BRISKImageFeature2d* brisk_image_feature2d_factory(std::map<std::string, msgpack::object> *kw);
+FREAKImageFeature2d* freak_image_feature2d_factory(std::map<std::string, msgpack::object> *kw);
 HammingFeature2dHashIndex* hamming_feature2d_hash_index_factory(std::map<std::string, msgpack::object> *kw);
 void delete_array(void *array);
 } // namespace Picarus
