@@ -54,8 +54,8 @@ std::vector<std::pair<double, std::string> > *HammingFeature2dHashIndex::query_i
             int num_results = 0;
             int *results = index->query_index(hashes + num_bytes * i, num_bytes, &num_results);
             for (j = 0; j < num_results; ++j) {
-                if (j == 0)
-                    printf("b: %d %d %d %d\n", i, j, results[j * 2], results[j * 2 + 1]);
+                //if (j == 0)
+                //    printf("b: %d %d %d %d\n", i, j, results[j * 2], results[j * 2 + 1]);
                 if (results[j * 2] > hamming_thresh)
                     break;
                 try {
@@ -63,7 +63,8 @@ std::vector<std::pair<double, std::string> > *HammingFeature2dHashIndex::query_i
                 } catch (const std::out_of_range& oor) {
                     prev_dist_val = 0.;
                 }
-                dists[indeces[results[j * 2 + 1]]] = prev_dist_val - idf[indeces[results[j * 2 + 1]]];  // TODO(brandyn): Incorporate TF-IDF if num_bytes is small enough to store densely
+                // TODO(brandyn): Incorporate TF-IDF if num_bytes is small enough to store densely
+                dists[indeces[results[j * 2 + 1]]] = prev_dist_val - idf[indeces[results[j * 2 + 1]]];
             }
             delete [] results;
         }
@@ -75,10 +76,10 @@ std::vector<std::pair<double, std::string> > *HammingFeature2dHashIndex::query_i
             hamdist_cmap_lut16(this->hashes, hashes + num_bytes * i, temp_hamming, num_bytes, this->num_hashes, 1);
             for (j = 0; j < this->num_hashes; ++j)
                 max_valid_ind = place_dist_in_results(j, temp_hamming[j], result_indeces, result_dists, max_keypoint_results, max_valid_ind);
-            printf("max_valid_ind[%d]\n", max_valid_ind);
+            //printf("max_valid_ind[%d]\n", max_valid_ind);
             for (j = 0; j < max_valid_ind + 1; ++j) {
-                if (j == 0)
-                    printf("b: %d %d %f\n", i, j, result_dists[j]);
+                //if (j == 0)
+                //    printf("b: %d %d %f\n", i, j, result_dists[j]);
                 if (result_dists[j] > hamming_thresh)
                     break;
                 try {
@@ -86,7 +87,8 @@ std::vector<std::pair<double, std::string> > *HammingFeature2dHashIndex::query_i
                 } catch (const std::out_of_range& oor) {
                     prev_dist_val = 0.;
                 }
-                dists[indeces[result_indeces[j]]] = prev_dist_val - idf[indeces[result_indeces[j]]];  // TODO(brandyn): Incorporate TF-IDF if num_bytes is small enough to store densely
+                // TODO(brandyn): Incorporate TF-IDF if num_bytes is small enough to store densely
+                dists[indeces[result_indeces[j]]] = prev_dist_val - idf[indeces[result_indeces[j]]];
             }
         }
     }
