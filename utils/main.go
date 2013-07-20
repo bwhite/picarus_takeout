@@ -4,7 +4,7 @@ import "fmt"
 //import "picarus"
 import "os"
 import "io"
-//import "./picarus_takeout"
+import picarusto "github.com/bwhite/picarus_takeout/go"
 
 func readFile(filename string) (string, error) {
 	fi, err := os.Open(filename)
@@ -54,5 +54,5 @@ func main() {
 	if err != nil {
 		fmt.Println("Couldn't read file")
 	}
-	writeFile("output.msgpack", ModelChainProcessBinary(model, input))
+	writeFile("output.msgpack", picarusto.ModelChainProcessBinary(model, input))
 }

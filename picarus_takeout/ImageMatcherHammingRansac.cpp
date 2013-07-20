@@ -37,10 +37,6 @@ void ImageMatcherHammingRansac::process_binary(const unsigned char *input, int s
         for (int j = 0; j < num_pts1; ++j) {
             if (dists[num_pts1 * i + j] <= max_dist) {
                 cv::Point2f pt0(vec0[i * 6 + 1], vec0[i * 6]), pt1(vec1[j * 6 + 1], vec1[j * 6]);
-                std::cout << vec0[i * 6 + 1] << std::endl;
-                std::cout << vec0[i * 6] << std::endl;
-                std::cout << vec1[j * 6 + 1] << std::endl;
-                std::cout << vec1[j * 6] << std::endl;
                 match0.push_back(pt0);
                 match1.push_back(pt1);
             }
@@ -51,7 +47,7 @@ void ImageMatcherHammingRansac::process_binary(const unsigned char *input, int s
     int num_inliers = 0;
     for (int i = 0; i < match0.size(); ++i)
         num_inliers += ((unsigned char *)mask.data)[i] > 0;
-        std::cout << H << std::endl;
+    std::cout << H << std::endl;
     delete [] dists;
     std::cout << num_inliers << std::endl;
     bool matched = num_inliers >= min_inliers;

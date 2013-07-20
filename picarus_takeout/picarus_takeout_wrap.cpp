@@ -14,7 +14,7 @@ char *picarus_takeout_model_chain_process_binary(const char *msgpack_binary, int
 }
 
 char *picarus_takeout_process_binary(void *model, const char *input, int size, int *size_out) {
-    return ((Picarus::Model*)model)->process_binary((const unsigned char *)input, size, size_out);
+    return (char *)((Picarus::Model*)model)->process_binary((const unsigned char *)input, size, size_out);
 }
 
 void picarus_takeout_delete_model(void *model) {
