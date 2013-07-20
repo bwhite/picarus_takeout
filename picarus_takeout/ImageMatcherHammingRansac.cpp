@@ -41,16 +41,23 @@ void ImageMatcherHammingRansac::process_binary(const unsigned char *input, int s
                 match1.push_back(pt1);
             }
         }
-
-    cv::Mat mask(match0.size(), 1, CV_8U);
-    cv::Mat H = findHomography(match0, match1, CV_RANSAC, reproj_thresh, mask);
-    int num_inliers = 0;
-    for (int i = 0; i < match0.size(); ++i)
-        num_inliers += ((unsigned char *)mask.data)[i] > 0;
-    std::cout << H << std::endl;
+    bool matched = false;
+    if (match0.size() > 4) {
+        cv::Mat mask(match0.size(), 1, CV_8U);
+        cv::Mat H = findHomography(match0, match1, CV_RANSAC, reproj_thresh, mask);
+        int num_inliers = 0;
+        for (int i = 0; i < match0.size(); ++i)
+            num_inliers += ((unsigned char *)mask.data)[i] > 0;
+        std::cout << H << std::endl;
+        std::cout << num_inliers << std::endl;
+        matched = num_inliers >= min_inliers;
+        std::cout << "Ransac ran" << std::endl;
+    }
     delete [] dists;
-    std::cout << num_inliers << std::endl;
-    bool matched = num_inliers >= min_inliers;
+    if (matched)
+        std::cout << "C:Matched" << std::endl;
+    else
+        std::cout << "C:UnMatched" << std::endl;
     bool_tostring(matched, collector);
 }
 }

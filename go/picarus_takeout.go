@@ -16,6 +16,7 @@ func ModelChainProcessBinary(model string, input string) string {
 	defer C.free(unsafe.Pointer(inputp))
 	var sizeOut C.int
 	out := unsafe.Pointer(C.picarus_takeout_model_chain_process_binary(modelp, C.int(len(model)), inputp, C.int(len(input)), &sizeOut))
+	outS := string(C.GoBytes(out, sizeOut))
 	C.picarus_takeout_delete_output(out)
-	return string(C.GoBytes(out, sizeOut))
+	return outS
 }
