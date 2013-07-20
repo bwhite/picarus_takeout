@@ -50,7 +50,7 @@ func main() {
 	if err != nil {
 		fmt.Println("Couldn't read file")
 	}
-	input, err := readFile("input.jpg")
+	input, err := readFile("input.msgpack")
 	if err != nil {
 		fmt.Println("Couldn't read file")
 	}
