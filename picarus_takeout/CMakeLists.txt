@@ -51,5 +51,5 @@ INSTALL(TARGETS picarus_takeout picarus
 )
 
 INSTALL(TARGETS picarusto
-  LIBRARY DESTINATION /usr/local/lib
+  LIBRARY DESTINATION /usr/lib
 )

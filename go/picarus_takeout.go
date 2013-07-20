@@ -1,4 +1,6 @@
-package picarus_takeout
+package main
+
+//picarus_takeout
 
 /*
 #cgo LDFLAGS: -lpicarusto -lopencv_highgui -lopencv_core -lopencv_imgproc -lopencv_calib3d -lopencv_objdetect -lopencv_features2d -lmsgpack -lfftw3f
