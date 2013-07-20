@@ -15,6 +15,8 @@ public:
     virtual void process_binary(const unsigned char *input, int size, BinaryCollector *collector) = 0;
     virtual unsigned char *process_binary(const unsigned char *input, int size, int *size_out);
 };
+void string_pair_fromstring(const unsigned char *input, int size, std::pair<std::string, std::string> *val);
+void string_pair_tostring(const std::pair<std::string, std::string> &val,  BinaryCollector *collector);
 void ndarray_fromstring(const unsigned char *input, int size, std::vector<double> *vec, std::vector<int> *shape);
 void ndarray_tostring(const std::vector<double> &vec, const std::vector<int> &shape, BinaryCollector *collector);
 void double_fromstring(const unsigned char *input, int size, double *val);

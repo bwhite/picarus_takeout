@@ -3,7 +3,7 @@ package picarus_takeout
 /*
 #cgo LDFLAGS: -lpicarusto -lopencv_highgui -lopencv_core -lopencv_imgproc -lopencv_calib3d -lopencv_objdetect -lopencv_features2d -lmsgpack -lfftw3f
 #include <stdlib.h>
-#include "../picarus_takeout_wrap.hpp"
+#include "../picarus_takeout/picarus_takeout_wrap.hpp"
 */
 import "C"
 import "unsafe"

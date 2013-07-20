@@ -52,6 +52,8 @@ ModelChain::ModelChain(const char *msgpack_binary, int size) {
             this->models.push_back(local_nbnn_classifier_factory(&kw));
         else if (!name.compare("picarus.FaceImageObjectDetector"))
             this->models.push_back(face_image_object_detector_factory(&kw));
+        else if (!name.compare("picarus.ImageMatcherHammingRansac"))
+            this->models.push_back(image_matcher_hamming_ransac_factory(&kw));
         else {
             printf("Error: Unknown name[%s]\n", name.c_str());
             this->models.resize(0);

@@ -218,4 +218,15 @@ FaceImageObjectDetector* face_image_object_detector_factory(std::map<std::string
     return new FaceImageObjectDetector(scale_factor, min_neighbors, min_size, max_size);
 }
 
+ImageMatcherHammingRansac* image_matcher_hamming_ransac_factory(std::map<std::string, msgpack::object> *kw) {
+    int max_dist, min_inliers;
+    double reproj_thresh;
+    kw->at(std::string("max_dist")) >> max_dist;
+    kw->at(std::string("min_inliers")) >> min_inliers;
+    kw->at(std::string("reproj_thresh")) >> reproj_thresh;
+
+    // TODO: Check bounds/params
+    return new ImageMatcherHammingRansac(max_dist, min_inliers, reproj_thresh);
+}
+
 } // namespace Picarus

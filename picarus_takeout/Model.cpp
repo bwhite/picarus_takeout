@@ -16,6 +16,19 @@ unsigned char *Model::process_binary(const unsigned char *input, int size, int *
     return output;
 }
 
+void string_pair_fromstring(const unsigned char *input, int size, std::pair<std::string, std::string> *val) {
+    msgpack::unpacked msg;
+    msgpack::unpack(&msg, (const char *)input, size);
+    msgpack::object obj = msg.get();
+    obj >> *val;
+}
+
+void string_pair_tostring(const std::pair<std::string, std::string> &val,  BinaryCollector *collector) {
+    msgpack::sbuffer sbuf;
+    msgpack::pack(sbuf, val);
+    (*collector)((const unsigned char *)sbuf.data(), sbuf.size());
+}
+
 void double_strings_fromstring(const unsigned char *input, int size, std::vector<std::pair<double, std::string> > *val) {
     msgpack::unpacked msg;
     msgpack::unpack(&msg, (const char *)input, size);
