@@ -66,6 +66,7 @@ void ImageHomographyRansacHamming::process_binary(const unsigned char *input, in
     std::vector<cv::Point2f> match0;
     std::vector<cv::Point2f> match1;
     for (int i = 0; i < num_pts_smaller; ++i) {
+        memset(dists_bigger, 0, sizeof(int) * num_pts_bigger);
         hamdist_cmap_lut16((const unsigned char *)smaller + shape0[1] * i,
                            (const unsigned char *)bigger,
                            dists_bigger, shape0[1], 1, num_pts_bigger);
@@ -73,6 +74,7 @@ void ImageHomographyRansacHamming::process_binary(const unsigned char *input, in
         min_dist_singleton(dists_bigger, num_pts_bigger, &min_dist0, &min_ind0);
         if (max_dist < min_dist0 || min_ind0 < 0 || (cache_bigger[min_ind0] != -1 && cache_bigger[min_ind0] != i))
             continue;
+        memset(dists_smaller, 0, sizeof(int) * num_pts_smaller);
         hamdist_cmap_lut16((const unsigned char *)bigger + shape0[1] * min_ind0,
                            (const unsigned char *)smaller,
                            dists_smaller, shape0[1], 1, num_pts_smaller);
