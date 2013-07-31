@@ -71,8 +71,6 @@ void binary_feature2d_fromstring(const unsigned char *input, int size, std::stri
     *shape = rvec2.get();
 }
 
-
-
 void image_detections_tostring(const std::string &image_str, const std::vector<double> &vec, const std::vector<int> &shape, BinaryCollector *collector) {
     msgpack::type::tuple<std::string, std::vector<double>, std::vector<int> > tuple(image_str, vec, shape);
     msgpack::sbuffer sbuf;

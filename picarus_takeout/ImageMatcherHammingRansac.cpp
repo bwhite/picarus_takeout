@@ -31,17 +31,33 @@ void ImageMatcherHammingRansac::process_binary(const unsigned char *input, int s
                        dists, shape0[1], num_pts0, num_pts1);
     std::vector<cv::Point2f> match0;
     std::vector<cv::Point2f> match1;
-
     
-    for (int i = 0; i < num_pts0; ++i)
+    for (int i = 0; i < num_pts0; ++i) {
+        int min_ind = 0;
+        int min_dist = 100000;
         for (int j = 0; j < num_pts1; ++j) {
-            if (dists[num_pts1 * i + j] <= max_dist) {
-                cv::Point2f pt0(vec0[i * 6 + 1], vec0[i * 6]), pt1(vec1[j * 6 + 1], vec1[j * 6]);
-                match0.push_back(pt0);
-                match1.push_back(pt1);
+            if (dists[num_pts1 * i + j] < min_dist) {
+                min_dist = dists[num_pts1 * i + j];
+                min_ind = j;
             }
         }
+        if (max_dist < min_dist)
+            continue;
+        int save_point = 1;
+        for (int k = 0; k < num_pts0; ++k) {
+            if (dists[num_pts1 * k + min_ind] <= min_dist && k != i) {
+                save_point = 0;
+                break;
+            }
+        }
+        if (save_point) {
+            cv::Point2f pt0(vec0[i * 6 + 1], vec0[i * 6]), pt1(vec1[min_ind * 6 + 1], vec1[min_ind * 6]);
+            match0.push_back(pt0);
+            match1.push_back(pt1);
+        }
+    }
     bool matched = false;
+    std::cout << "Matched " << match0.size() << std::endl;
     if (match0.size() > 4) {
         cv::Mat mask(match0.size(), 1, CV_8U);
         cv::Mat H = findHomography(match0, match1, CV_RANSAC, reproj_thresh, mask);
@@ -49,9 +65,8 @@ void ImageMatcherHammingRansac::process_binary(const unsigned char *input, int s
         for (int i = 0; i < match0.size(); ++i)
             num_inliers += ((unsigned char *)mask.data)[i] > 0;
         std::cout << H << std::endl;
-        std::cout << num_inliers << std::endl;
         matched = num_inliers >= min_inliers;
-        std::cout << "Ransac ran" << std::endl;
+        std::cout << "Ransac ran - Inliers " << num_inliers << std::endl;
     }
     delete [] dists;
     if (matched)
