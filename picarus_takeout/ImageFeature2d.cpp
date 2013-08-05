@@ -18,14 +18,13 @@ void ImageFeature2d::process_binary(const unsigned char *input, int size, Binary
     compute_feature2d(image, height, width, &descriptors, &keypoints);
 
     std::vector<double> keypoints_vec(keypoints.size() * 6);
-    double size_scale = height > width ? height : width; // NOTE(brandyn): Scale size by max of height/width
     for (int i = 0; i < keypoints.size(); ++i) {
-        keypoints_vec[i * 6] = keypoints[i].pt.y / height;
-        keypoints_vec[i * 6 + 1] = keypoints[i].pt.x / width;
+        keypoints_vec[i * 6] = keypoints[i].pt.y;
+        keypoints_vec[i * 6 + 1] = keypoints[i].pt.x;
         keypoints_vec[i * 6 + 2] = keypoints[i].angle;
         keypoints_vec[i * 6 + 3] = keypoints[i].response;
         keypoints_vec[i * 6 + 4] = keypoints[i].octave;
-        keypoints_vec[i * 6 + 5] = keypoints[i].size / size_scale;
+        keypoints_vec[i * 6 + 5] = keypoints[i].size;
     }
     std::vector<int> shape(2);
     shape[0] = descriptors.rows;
