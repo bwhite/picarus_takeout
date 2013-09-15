@@ -20,6 +20,7 @@
 #include "HammingFeature2dHashIndex.hpp"
 #include "ImageMatcherHammingRansac.hpp"
 #include "ImageHomographyRansacHamming.hpp"
+#include "HomographyRansac.hpp"
 #include <string>
 #include <vector>
 #include <map>
@@ -45,6 +46,7 @@ FREAKImageFeature2d* freak_image_feature2d_factory(std::map<std::string, msgpack
 HammingFeature2dHashIndex* hamming_feature2d_hash_index_factory(std::map<std::string, msgpack::object> *kw);
 ImageMatcherHammingRansac* image_matcher_hamming_ransac_factory(std::map<std::string, msgpack::object> *kw);
 ImageHomographyRansacHamming* image_homography_ransac_hamming_factory(std::map<std::string, msgpack::object> *kw);
+HomographyRansac* homography_ransac_factory(std::map<std::string, msgpack::object> *kw);
 void delete_array(void *array);
 } // namespace Picarus
 

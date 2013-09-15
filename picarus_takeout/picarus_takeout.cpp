@@ -240,4 +240,14 @@ ImageHomographyRansacHamming* image_homography_ransac_hamming_factory(std::map<s
     return new ImageHomographyRansacHamming(max_dist, min_inliers, reproj_thresh);
 }
 
+HomographyRansac* homography_ransac_factory(std::map<std::string, msgpack::object> *kw) {
+    int min_inliers;
+    double reproj_thresh;
+    kw->at(std::string("min_inliers")) >> min_inliers;
+    kw->at(std::string("reproj_thresh")) >> reproj_thresh;
+
+    // TODO: Check bounds/params
+    return new HomographyRansac(min_inliers, reproj_thresh);
+}
+
 } // namespace Picarus
