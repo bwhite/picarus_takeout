@@ -19,7 +19,7 @@ void HomographyRansac::process_binary(const unsigned char *input, int size, Bina
     std::vector<cv::Point2f> match1;
     
     for (int i = 0; i < shape[0]; ++i) {
-        cv::Point2f pt0(points[4 * i + 1], points[4 * i]), pt1(points[4 * i + 3], points[4 * i + 2]);
+        cv::Point2f pt0(points[4 * i], points[4 * i + 1]), pt1(points[4 * i + 2], points[4 * i + 3]);
         match0.push_back(pt0);
         match1.push_back(pt1);
     }
