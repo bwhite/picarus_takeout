@@ -21,6 +21,7 @@
 #include "ImageMatcherHammingRansac.hpp"
 #include "ImageHomographyRansacHamming.hpp"
 #include "HomographyRansac.hpp"
+#include "ARMarkerDetector.hpp"
 #include <string>
 #include <vector>
 #include <map>
@@ -47,6 +48,7 @@ HammingFeature2dHashIndex* hamming_feature2d_hash_index_factory(std::map<std::st
 ImageMatcherHammingRansac* image_matcher_hamming_ransac_factory(std::map<std::string, msgpack::object> *kw);
 ImageHomographyRansacHamming* image_homography_ransac_hamming_factory(std::map<std::string, msgpack::object> *kw);
 HomographyRansac* homography_ransac_factory(std::map<std::string, msgpack::object> *kw);
+ARMarkerDetector* ar_marker_detector_factory(std::map<std::string, msgpack::object> *kw);
 void delete_array(void *array);
 } // namespace Picarus
 

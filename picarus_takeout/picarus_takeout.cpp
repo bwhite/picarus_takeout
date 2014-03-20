@@ -250,4 +250,8 @@ HomographyRansac* homography_ransac_factory(std::map<std::string, msgpack::objec
     return new HomographyRansac(min_inliers, reproj_thresh);
 }
 
+ARMarkerDetector* ar_marker_detector_factory(std::map<std::string, msgpack::object> *kw) {
+    return new ARMarkerDetector();
+}
+
 } // namespace Picarus

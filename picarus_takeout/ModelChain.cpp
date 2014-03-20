@@ -44,6 +44,8 @@ ModelChain::ModelChain(const char *msgpack_binary, int size) {
             this->models.push_back(spherical_hasher_factory(&kw));
         else if (!name.compare("picarus.SphericalHashIndex"))
             this->models.push_back(spherical_hash_index_factory(&kw));
+        else if (!name.compare("picarus.ARMarkerDetector"))
+            this->models.push_back(ar_marker_detector_factory(&kw));
         else if (!name.compare("picarus.HammingFeature2dHashIndex"))
             this->models.push_back(hamming_feature2d_hash_index_factory(&kw));
         else if (!name.compare("picarus.BlocksImageMultiFeature"))
